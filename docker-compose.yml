@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+
+  orders:
+    restart: always
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
+    ports:
+      - "1001:1001"
+    volumes:
+      - ./orders:/app
+
+  users:
+    restart: always
+    build:
+      context: ./users
+      dockerfile: Dockerfile
+    ports:
+      - "1000:1000"
+    volumes:
+      - ./users:/app
