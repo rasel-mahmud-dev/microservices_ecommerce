@@ -21,3 +21,13 @@ services:
       - "1000:1000"
     volumes:
       - ./users:/app
+
+  products:
+    restart: always
+    build:
+      context: ./products
+      dockerfile: Dockerfile
+    ports:
+      - "1003:1003"
+    volumes:
+      - ./products:/app
