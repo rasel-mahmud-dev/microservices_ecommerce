@@ -1,7 +1,7 @@
 const connectDatabase = require("../database");
 const router = require("express").Router()
 
-/// get all products
+// get all products
 router.get("/", async function (req, res, next) {
     try {
         let client = await connectDatabase()
@@ -37,9 +37,7 @@ router.post("/", async function (req, res, next) {
 })
 
 
-
-
-// add product
+// update product
 router.patch("/:productId", async function (req, res, next) {
     try {
         const {title, price, description} = req.body
@@ -68,8 +66,7 @@ router.patch("/:productId", async function (req, res, next) {
 })
 
 
-
-/// delete product
+// delete product
 router.delete("/:productId", async function (req, res, next) {
     try {
         let client = await connectDatabase()
