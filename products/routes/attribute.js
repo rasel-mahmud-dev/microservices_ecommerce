@@ -22,6 +22,9 @@ router.post("/", async function (req, res, next) {
         const { name, description} = req.body
         let client = await connectDatabase()
 
+        let result = await client.query("select name from attributes where name = $1", [name])
+        if(result.rowCount > 0) return next("This attribute already exists")
+
         let {
             rowCount,
             rows
@@ -44,6 +47,7 @@ router.patch("/:attributeId", async function (req, res, next) {
     try {
         const { name, description} = req.body
         let client = await connectDatabase()
+
         const sql = `
             UPDATE attributes
                 SET name = $1,

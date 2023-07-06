@@ -10,6 +10,7 @@ create table if not exists products (
 
 -- attribute model
 create table if not exists attributes (
-  name serial not null primary key,
+  attribute_id serial not null primary key,
+  name varchar(400),
   description varchar(500)
 )
