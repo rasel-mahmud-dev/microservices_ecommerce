@@ -1,5 +1,7 @@
-create table products (
-  product_id SERIAL NOT NULL PRIMARY KEY,
-  category_name VARCHAR(255),
-  description VARCHAR(255)
+
+create table if not exists products (
+  product_id serial not null primary key,
+  title varchar(255),
+  description varchar,
+  price int
 )
