@@ -4,3 +4,4 @@ orders/node_modules
 users/node_modules
 products/node_modules
 database/**
+frontend/node_modules

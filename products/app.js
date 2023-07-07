@@ -1,5 +1,6 @@
 const express = require("express")
 const router = require("./routes");
+const cors = require("cors")
 
 const {readFileSync} = require("fs");
 const connectDatabase = require("./database");
@@ -7,6 +8,11 @@ const connectDatabase = require("./database");
 const app = express()
 
 app.use(express.json())
+app.use(cors({
+    origin: function (origin, callback) {
+        callback(null, true)
+    }
+}))
 
 app.use(router)
 
