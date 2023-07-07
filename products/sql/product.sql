@@ -7,12 +7,11 @@ create table if not exists products (
 );
 
 
-
 -- attribute table
 create table if not exists attributes (
   attribute_id serial not null primary key,
   name varchar(400),
-  description varchar(500)
+  description varchar(1000)
 );
 
 
@@ -26,7 +25,9 @@ create table if not exists variants (
 
 -- variant attributes table
 create table if not exists variant_attributes (
-  variant_id serial not null primary key,
-  product_id integer not null references products (product_id),
-  sku integer
+  variant_attribute_id serial not null primary key,
+  variant_id integer not null references variants (variant_id),
+  attribute_id integer not null references attributes (attribute_id),
+  value varchar(1000)
 )
+
