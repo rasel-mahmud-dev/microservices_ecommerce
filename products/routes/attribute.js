@@ -23,7 +23,7 @@ router.post("/", async function (req, res, next) {
         let client = await connectDatabase()
 
         let result = await client.query("select name from attributes where name = $1", [name])
-        if(result.rowCount > 0) return next("This attribute already exists")
+        if(result.rowCount > 0) return next(name + " attribute already exists")
 
         let {
             rowCount,
