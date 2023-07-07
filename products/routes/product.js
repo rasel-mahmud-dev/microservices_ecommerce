@@ -1,10 +1,12 @@
 const connectDatabase = require("../database");
+const {pool} = require("../database");
 const router = require("express").Router()
 
 // get all products
 router.get("/", async function (req, res, next) {
+    let client = null
     try {
-        let client = await connectDatabase()
+        client = await connectDatabase()
         let {rows} = await client.query("select * from products")
         res.send(rows)
 
@@ -71,7 +73,7 @@ router.delete("/:productId", async function (req, res, next) {
     try {
         let client = await connectDatabase()
         let {rowCount} = await client.query("DELETE FROM products WHERE product_id = $1", [req.params.productId])
-        if(rowCount){
+        if (rowCount) {
             res.send("Product has been deleted")
         } else {
             next("Product already deleted or not exists")
@@ -81,7 +83,6 @@ router.delete("/:productId", async function (req, res, next) {
         next(ex)
     }
 })
-
 
 
 module.exports = router

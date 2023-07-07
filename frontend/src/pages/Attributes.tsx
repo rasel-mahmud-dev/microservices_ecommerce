@@ -1,12 +1,11 @@
-
 import useSWR from 'swr';
 import axios from "axios";
 
 
 const Attributes = () => {
 
-    const { data, error } = useSWR('/api/attributes', ()=>{
-        return axios.get("/api/attributes")
+    const {data, error} = useSWR('/api/attributes', () => {
+        return axios.get("/api/attributes").then(res => res.data)
     });
 
 
@@ -20,12 +19,26 @@ const Attributes = () => {
 
 
     return (
-        <div>
-            {data?.data?.map((attr)=>(
-                <div key={attr.attribute_id}>
-                    {attr.name}
-                </div>
-            ))}
+        <div className="card">
+            <h4>Attributes</h4>
+            <table>
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Desc</th>
+                </tr>
+                </thead>
+                <tbody>
+                {data?.map((attr) => (
+                    <tr key={attr.attribute_id}>
+                        <td>{attr.attribute_id}</td>
+                        <td>{attr.name}</td>
+                        <td>{attr.description}</td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
         </div>
     );
 };
