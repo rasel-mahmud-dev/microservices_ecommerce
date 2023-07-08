@@ -3,30 +3,69 @@ import useSWR from "swr";
 import apis from "../apis/axios.ts";
 
 
+type Attribute = {
+    attribute_id: string,
+    name: string
+    description: string
+    attribute_value_id: string
+}
+
+type VariantKey = number
+
+type Variant = {
+    sku: string,
+    attributes: Attribute[]
+}
+
+type Variants = {
+    [key: VariantKey]: Variant
+}
+
+type AttributeId = string
+
+
+type AttributeValue = {
+    attribute_value_id: string,
+    attribute_id: string,
+    value: string
+    label?: string
+}
+
 const AddProduct = () => {
 
     const data = useSWR('/api/attributes', () => {
-        return apis.get("/products-service/api/attributes").then(res => res.data)
+        return apis.get<Attribute[]>("/products-service/api/attributes").then(res => res.data)
     });
 
-    const [variants, setVariants] = useState([
-        {}
-    ])
+    const [variants, setVariants] = useState<Variants>({
+        0: {
+            sku: "",
+            attributes: [{
+                attribute_id: "",
+                attribute_value_id: "",
+                image: "",
+            }]
+        }
+    })
 
-    const [basicData, setBasicData] = useState([
-        {}
-    ])
+    const [basicData, setBasicData] = useState<{ title: string, description: string }>({
+        title: "",
+        description: ""
+    })
 
-    useEffect(()=>{
-        if(data?.data){
-            const firstAttribute = data.data[0]
+    useEffect(() => {
+        if (data?.data && data?.data) {
+            const firstAttribute = data?.data[0]
             fetchAttributeValue(firstAttribute.attribute_id)
         }
     }, [data?.data])
 
-    const [attributeValue, setAttributeValue] = useState({})
+    const [attributeValue, setAttributeValue] = useState<{
+        [key: AttributeId] : AttributeValue[]
+    }>({})
 
-    function fetchAttributeValue(attributeId: number) {
+
+    function fetchAttributeValue(attributeId: Pick<Attribute, "attribute_id">['attribute_id']) {
         apis.get("/products-service/api/attribute-value/" + attributeId).then(({data, status}) => {
             if (status === 200) {
                 setAttributeValue(prev => ({
@@ -38,49 +77,91 @@ const AddProduct = () => {
     }
 
     function handleAddMoreVariant() {
-        setVariants(prev => ([
-            ...prev,
-            {}
-        ]))
+        setVariants(prev => {
+            let updatedState = {...prev}
+
+            let keys = Object.keys(updatedState)
+            let lastKey = Number(keys[keys.length - 1])
+            updatedState[lastKey + 1] = {
+                sku: "",
+                attributes: [{
+                    attribute_id: "",
+                    attribute_value_id: "",
+                    image: "",
+                }]
+            }
+            return updatedState
+        })
     }
 
-    function handleSubmit(e) {
+    function handleAddMoreAttribute(variantItemIndex: number) {
+        setVariants(prev => {
+            let updatedState = {...prev}
+            updatedState[variantItemIndex].attributes = [
+                ...updatedState[variantItemIndex].attributes,
+                {
+                    attribute_id: "",
+                    attribute_value_id: "",
+                    image: "",
+                }
+            ]
+            return updatedState
+        })
+    }
+
+
+    async function handleSubmit(e) {
         e.preventDefault();
 
-        console.log(variants)
+        try {
+            let response = apis.post("/products-service/api/products", {
+                variants: variants,
+                title: basicData.title,
+                description: basicData.description,
+            })
+
+
+        } catch (ex) {
+            console.log(ex)
+        }
+
     }
 
 
-    function handleChange(e, index?: number) {
+    function handleChange(e, variantkey?: VariantKey, attributeIndex?: number) {
+
         const {name, value} = e.target
 
-        if (index === undefined) {
+        if (variantkey === undefined) {
             setBasicData(prevState => ({
                 ...prevState,
                 [name]: value
             }))
 
         } else {
-            let updateVariants = [...variants]
-            updateVariants[index] = {
-                ...updateVariants[index],
-                [name]: value
+
+            let updateVariants = {...variants}
+
+            if (attributeIndex === undefined) {
+                updateVariants[variantkey][name as keyof Variant] = value
+
+            } else {
+                if (updateVariants[variantkey]) {
+                    updateVariants[variantkey].attributes[attributeIndex as number][name as keyof Attribute] = value
+                }
             }
             setVariants(updateVariants)
         }
-
         if (name === "attribute_id") {
             fetchAttributeValue(value)
         }
-
     }
 
-    console.log(attributeValue)
 
     return (
         <div>
 
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto">
+            <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
 
                 <div>
                     <h2>Basic info</h2>
@@ -88,65 +169,96 @@ const AddProduct = () => {
                         type="text"
                         onChange={handleChange}
                         name="title"
+                        value={basicData.title}
                         placeholder="Product Title"
                     />
-
 
                     <textarea
                         onChange={handleChange}
                         placeholder="Product Title"
                         name="description"
+                        value={basicData.description}
                     />
                 </div>
 
 
                 <div>
-                    <h2>Create Variant</h2>
+                    <div className="flex justify-between items-center">
 
-                    {variants.map((item, i) => (
+                        <h2>Create Variant</h2>
+                        <button
+                            type="button"
+                            onClick={handleAddMoreVariant}>
+                            Add More Variant
+                        </button>
+                    </div>
+
+                    {Object.keys(variants).map((variantkey, i) => (
                         <div className="mt-6">
-                            <label>Variant SKU</label>
-                            <input name="sku" onChange={(e) => handleChange(e, i)}
-                                   type="text"
-                                   placeholder="Variant SKU"
-                            />
 
-                            <label>Variant Type</label>
-                            <select name="attribute_id" onChange={(e) => handleChange(e, i)}>
-                                <option value="">Select Variant</option>
-                                {data.data?.map((attr) => (
-                                    <option key={attr.attribute_id} value={attr.attribute_id}>{attr.name}</option>
+                            <div>
+                                <label>Variant SKU</label>
+                                <input
+                                    name="sku"
+                                    onChange={(e) => handleChange(e, i)}
+                                    type="text"
+                                    value={variants[variantkey as unknown as VariantKey].sku}
+                                    placeholder="Variant SKU"
+                                />
+                            </div>
+
+                            <div className="">
+                                {variants[variantkey as unknown as VariantKey] && variants[variantkey as unknown as VariantKey].attributes.map((variantAttribute, index) => (
+                                    <div className="flex items-center">
+                                        <div>
+                                            <label>Attribute</label>
+                                            <select value={variantAttribute.attribute_id} name="attribute_id"
+                                                    onChange={(e) => handleChange(e, variantkey as unknown as VariantKey, index)}>
+                                                <option value="">Select Attribute</option>
+                                                {data.data?.map((attr) => (
+                                                    <option key={attr.attribute_id}
+                                                            value={attr.attribute_id}>{attr.name}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label>Attribute Value</label>
+                                            <select
+                                                value={variantAttribute.attribute_value_id}
+                                                name="attribute_value_id"
+                                                onChange={(e) => handleChange(e, i, index)}
+                                            >
+                                                <option value="">Select value</option>
+
+                                                {attributeValue[variantAttribute.attribute_id as keyof AttributeValue] && attributeValue[variantAttribute.attribute_id]?.map((attrValue) => (
+                                                    <option key={attrValue.attribute_value_id}
+                                                            value={attrValue.attribute_value_id}>{attrValue.value}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+
+                                        <div>
+                                            <label>Image </label>
+                                            <input
+                                                name="value"
+                                                type="file"
+                                                placeholder="Image"
+                                            />
+                                        </div>
+                                    </div>
                                 ))}
-                            </select>
 
-                            <label>Variant Value</label>
-                            {/*<input name="value" onChange={(e) => handleChange(e, i)}*/}
-                            {/*       type="text"*/}
-                            {/*       placeholder="Variant Value"*/}
-                            {/*/>*/}
-
-                            <select name="attribute_value_id" onChange={(e) => handleChange(e, i)}>
-                                {attributeValue[variants[i].attribute_id] && attributeValue[variants[i].attribute_id]?.map((attrValue) => (
-                                    <option key={attrValue.attribute_value_id}>{attrValue.value}</option>
-                                ))}
-                            </select>
-
-
-                            <label>Variant Image </label>
-                            <input name="value"
-                                   type="file"
-                                   placeholder="Image"
-                            />
-
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => handleAddMoreAttribute(i)}>
+                                More Attribute
+                            </button>
 
                         </div>
                     ))}
-
-                    <button
-                        type="button"
-                        onClick={handleAddMoreVariant}>
-                        Add More Variant
-                    </button>
 
 
                     <button

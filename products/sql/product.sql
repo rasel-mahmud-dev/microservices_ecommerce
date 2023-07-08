@@ -25,19 +25,20 @@ create table if not exists attribute_values (
 --ALTER TABLE attribute_values
 --ADD label varchar;
 
--- variant value table
+-- variants table
 create table if not exists variants (
   variant_id serial not null primary key,
   product_id integer not null references products (product_id),
   sku varchar(1000)
 );
 
-
 -- variant attributes table
+-- variant_attributes table
 create table if not exists variant_attributes (
   variant_attribute_id serial not null primary key,
-  variant_id integer not null references variants (variant_id),
+  variant_id serial not null references variants (variant_id),
+  attribute_value_id integer not null references attribute_values (attribute_value_id),
   attribute_id integer not null references attributes (attribute_id),
-  value varchar(1000)
-)
+  image varchar
+);
 
