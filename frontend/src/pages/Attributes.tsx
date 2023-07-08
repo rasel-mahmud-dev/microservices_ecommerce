@@ -5,7 +5,7 @@ import axios from "axios";
 const Attributes = () => {
 
     const {data, error} = useSWR('/api/attributes', () => {
-        return axios.get("/api/attributes").then(res => res.data)
+        return axios.get("/products-service/api/attributes").then(res => res.data)
     });
 
 

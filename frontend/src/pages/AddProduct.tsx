@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import useSWR from "swr";
 import apis from "../apis/axios.ts";
+import {useParams} from "react-router-dom";
 
 
 type Attribute = {
@@ -33,6 +34,14 @@ type AttributeValue = {
 
 const AddProduct = () => {
 
+    const {productId} = useParams()
+
+
+    const [updateProductData, setUpdateProductData] = useState({
+
+    })
+
+
     const data = useSWR('/api/attributes', () => {
         return apis.get<Attribute[]>("/products-service/api/attributes").then(res => res.data)
     });
@@ -59,6 +68,17 @@ const AddProduct = () => {
             fetchAttributeValue(firstAttribute.attribute_id)
         }
     }, [data?.data])
+
+
+    useEffect(() => {
+        if(productId){
+            apis.get("/products-service/api/products/edit/" + productId).then(({data, status})=>{
+                console.log(data)
+            })
+        }
+    }, [productId]);
+
+
 
     const [attributeValue, setAttributeValue] = useState<{
         [key: AttributeId] : AttributeValue[]

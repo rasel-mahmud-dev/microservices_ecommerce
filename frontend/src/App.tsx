@@ -6,6 +6,7 @@ import Products from "./pages/Products.tsx";
 import axios from "axios";
 import Attributes from "./pages/Attributes.tsx";
 import AddProduct from "./pages/AddProduct.tsx";
+import ProductDetail from "./pages/ProductDetail.tsx";
 
 function App() {
     const [count, setCount] = useState(0)
@@ -25,7 +26,9 @@ function App() {
 
                 <Routes>
                     <Route path="/products" element={<Products/>}/>
+                    <Route path="/p/:productId" element={<ProductDetail/>}/>
                     <Route path="/add-product" element={<AddProduct/>}/>
+                    <Route path="/update-product/:productId" element={<AddProduct/>}/>
                     <Route path="/attributes" element={<Attributes/>}/>
                 </Routes>
             </BrowserRouter>

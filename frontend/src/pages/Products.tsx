@@ -16,6 +16,10 @@ const Products = () => {
         return <div>Loading...</div>;
     }
 
+    function handleDelete(productId: string){
+        console.log(productId)
+    }
+
 
     return (
         <div>
@@ -33,19 +37,30 @@ const Products = () => {
                         <th>Title</th>
                         <th>Desc</th>
                         <th>Variant</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
                     {data?.map((prod) => (
                         <tr key={prod.product_id}>
                             <td>{prod.product_id}</td>
-                            <td>{prod.title}</td>
+                            <td>
+                                <Link to={`/p/${prod.product_id}`}>{prod.title}</Link>
+                            </td>
                             <td>{prod?.description}</td>
-                            <div>
-                                {prod?.variants?.map((vari)=>(
-                                    <div>{vari.sku}</div>
-                                ))}
-                            </div>
+                            <td>
+                               <div>
+                                   {prod?.variants?.map((vari)=>(
+                                       <div>{vari.sku}</div>
+                                   ))}
+                               </div>
+                            </td>
+                            <td>
+                                <div className="flex gap-x-2">
+                                    <button onClick={()=>handleDelete(prod.product_id)}>Delete</button>
+                                    <Link to={`/update-product/${prod.product_id}`}><button>Edit</button></Link>
+                                </div>
+                            </td>
                         </tr>
                     ))}
                     </tbody>

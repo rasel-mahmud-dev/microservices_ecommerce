@@ -1,6 +1,6 @@
 const connectDatabase = require("../database");
-const {pool} = require("../database");
 const router = require("express").Router()
+
 
 // get all products
 router.get("/", async function (req, res, next) {
@@ -37,6 +37,99 @@ router.get("/", async function (req, res, next) {
             GROUP BY
               p.product_id, p.title, p.description, p.price;
         `)
+        res.send(rows)
+
+    } catch (ex) {
+        next(ex)
+    }
+})
+
+
+// get product detail
+router.get("/:productId", async function (req, res, next) {
+    let client = null
+    try {
+        client = await connectDatabase()
+        let {rows} = await client.query(`
+          SELECT
+              p.product_id,
+              p.title,
+              p.description,
+              p.price,
+              json_agg(json_build_object(
+                'variant_id', v.variant_id,
+                'sku', v.sku,
+                'attributes', (
+                  SELECT json_agg(json_build_object(
+                    'attribute_id', va.attribute_id,
+                    'attribute_value_id', va.attribute_value_id,
+                    'value', av.value,
+                    'label', av.label,
+                    'name', att.name
+                  ))
+                  FROM variant_attributes va
+                  JOIN attribute_values av ON av.attribute_value_id = va.attribute_value_id
+                  JOIN attributes att ON att.attribute_id = va.attribute_id
+                  WHERE va.variant_id = v.variant_id
+                )
+              )) AS variants
+            FROM
+              products p
+            LEFT JOIN
+              variants v ON v.product_id = p.product_id
+              
+            WHERE p.product_id = $1
+            GROUP BY
+              p.product_id, p.title, p.description, p.price;
+        `, [req.params.productId])
+
+        res.send(rows[0])
+
+    } catch (ex) {
+        next(ex)
+    }
+})
+
+// get all products
+router.get("/edit/:productId", async function (req, res, next) {
+
+    try {
+        let client = await connectDatabase()
+        let {rows} = await client.query(`
+          SELECT
+              p.product_id,
+              p.title,
+              p.description,
+              p.price,
+              json_agg(json_build_object(
+                'variant_id', v.variant_id,
+                'sku', v.sku,
+                'attributes', (
+                  SELECT json_agg(json_build_object(
+                    'attribute_id', va.attribute_id,
+                    'attribute_value_id', va.attribute_value_id,
+                    'value', av.value,
+                    'label', av.label,
+                    'name', att.name
+                  ))
+                  FROM variant_attributes va
+                  JOIN attribute_values av ON av.attribute_value_id = va.attribute_value_id
+                  JOIN attributes att ON att.attribute_id = va.attribute_id
+                  WHERE va.variant_id = v.variant_id
+                )
+              )) AS variants
+            FROM
+              products p
+            LEFT JOIN
+              variants v ON v.product_id = p.product_id
+           
+           WHERE p.product_id = $1
+           
+            GROUP BY
+              p.product_id, p.title, p.description, p.price;
+        `, [req.params.productId]
+
+        )
         res.send(rows)
 
     } catch (ex) {
@@ -128,8 +221,6 @@ router.patch("/:productId", async function (req, res, next) {
     try {
         const {title, price, description} = req.body
         let client = await connectDatabase()
-
-        console.log(req.body)
 
         const sql = `
             UPDATE products
