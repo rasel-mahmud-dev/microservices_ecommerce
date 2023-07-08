@@ -9,12 +9,14 @@ type Attribute = {
     name: string
     description: string
     attribute_value_id: string
+
 }
 
 type VariantKey = number
 
 type Variant = {
-    sku: string,
+    variant_id?: string // for update
+    sku: string
     attributes: Attribute[]
 }
 
@@ -28,6 +30,7 @@ type AttributeId = string
 type AttributeValue = {
     attribute_value_id: string,
     attribute_id: string,
+    variant_attribute_id?: string
     value: string
     label?: string
 }
@@ -66,9 +69,7 @@ const AddProduct = () => {
     const {productId} = useParams()
 
 
-    const [updateProductData, setUpdateProductData] = useState({
-
-    })
+    const [updateProductData, setUpdateProductData] = useState({})
 
 
     const data = useSWR('/api/attributes', () => {
@@ -79,6 +80,7 @@ const AddProduct = () => {
     const [variants, setVariants] = useState<Variants>({
         0: {
             sku: "",
+            variant_id: "",
             attributes: [{
                 attribute_id: "",
                 attribute_value_id: "",
@@ -88,8 +90,9 @@ const AddProduct = () => {
     })
 
 
-    const [basicData, setBasicData] = useState<{ title: string, description: string }>({
+    const [basicData, setBasicData] = useState<{ title: string, description: string, price?: number }>({
         title: "",
+        price: 0,
         description: ""
     })
 
@@ -103,32 +106,39 @@ const AddProduct = () => {
 
 
     useEffect(() => {
-        if(productId){
-            apis.get<EditProductData>("/products-service/api/products/edit/" + productId).then(({data, status})=>{
-                if(data){
+        if (productId) {
+            apis.get<EditProductData>("/products-service/api/products/edit/" + productId).then(({data, status}) => {
+                if (data) {
                     setUpdateProductData(data)
                     setBasicData({
                         title: data.title,
+                        price: data.price || 0,
                         description: data.description,
                     })
 
-                    if(data.variants){
+                    if (data.variants) {
                         let updateVariants: Variant[] = []
 
-                        data.variants.forEach(vari=>{
-                            let a: Attribute[] = vari.attributes.map(attr=>{
+                        data.variants.forEach(vari => {
+
+                            let a: Attribute[] = vari.attributes && vari?.attributes?.map(attr => {
 
                                 fetchAttributeValue(attr.attribute_id)
 
                                 return ({
+                                    variant_attribute_id: attr.variant_attribute_id,
                                     attribute_id: attr.attribute_id,
                                     attribute_value_id: attr.attribute_value_id,
                                     image: "",
                                 })
-                            })
-
+                            }) || [{
+                                attribute_id: "",
+                                attribute_value_id: "",
+                                image: "",
+                            }]
                             updateVariants.push({
                                 sku: vari.sku,
+                                variant_id: vari.variant_id as unknown as string,
                                 attributes: a
                             })
                         })
@@ -141,7 +151,7 @@ const AddProduct = () => {
 
 
     const [attributeValue, setAttributeValue] = useState<{
-        [key: AttributeId] : AttributeValue[]
+        [key: AttributeId]: AttributeValue[]
     }>({})
 
 
@@ -194,11 +204,24 @@ const AddProduct = () => {
         e.preventDefault();
 
         try {
-            let response = apis.post("/products-service/api/products", {
-                variants: variants,
-                title: basicData.title,
-                description: basicData.description,
-            })
+
+            if (productId) {
+                let response = await apis.patch("/products-service/api/products/" + productId, {
+                    variants: variants,
+                    title: basicData.title,
+                    price: basicData.price,
+                    description: basicData.description,
+                })
+                console.log(response)
+            } else {
+                let response = await apis.post("/products-service/api/products", {
+                    variants: variants,
+                    price: basicData.price,
+                    title: basicData.title,
+                    description: basicData.description,
+                })
+                console.log(response)
+            }
 
 
         } catch (ex) {
@@ -238,7 +261,6 @@ const AddProduct = () => {
     }
 
 
-
     return (
         <div>
 
@@ -252,6 +274,13 @@ const AddProduct = () => {
                         name="title"
                         value={basicData.title}
                         placeholder="Product Title"
+                    />
+                    <input
+                        type="number"
+                        onChange={handleChange}
+                        name="price"
+                        value={basicData.price}
+                        placeholder="Product Price"
                     />
 
                     <textarea
@@ -345,7 +374,7 @@ const AddProduct = () => {
                     <button
                         className="mt-4 w-full"
                         type="submit">
-                        Add Product
+                        {productId ? "Update " : "Add "} Product
                     </button>
 
 

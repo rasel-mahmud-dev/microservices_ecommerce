@@ -18,33 +18,15 @@ const ProductDetail = () => {
         }
     }, [productId]);
 
-
-    function handleDelete(productId: string) {
-        console.log(productId)
-    }
-
-    function renderColor(value: string) {
-        return (
-            <div>
-                <div className="w-6 h-6 rounded-full" style={{background: value}}></div>
-            </div>
-        )
-    }
-
     function renderGroupAttribute(attributes) {
-
         let group = {}
-
-        attributes.forEach(attr => {
+        attributes && attributes.forEach(attr => {
             if (group[attr.name]) {
                 group[attr.name].push(attr)
             } else {
                 group[attr.name] = [attr]
             }
         })
-
-        console.log(group)
-
 
         return (
             <div>
@@ -98,14 +80,14 @@ const ProductDetail = () => {
                                 </div>
 
                                 <div className="mt-4">
-                                    <button>Order Now</button>
+                                    <button className="py-4 mx-auto w-full">Order Now</button>
                                 </div>
 
                             </div>
 
                             <div className="col-span-7">
                                 <h3>{productDetail.title}</h3>
-                                <p>{productDetail.description}</p>
+                                <p>{productDetail.description.substring(0, 500)}</p>
 
                                 <div>
                                     <p className="my-1 font-medium text-lg">Variants</p>

@@ -107,7 +107,8 @@ router.get("/edit/:productId", async function (req, res, next) {
                 'attributes', (
                   SELECT json_agg(json_build_object(
                     'attribute_id', va.attribute_id,
-                    'attribute_value_id', va.attribute_value_id
+                    'attribute_value_id', va.attribute_value_id,
+                    'variant_attribute_id', va.variant_attribute_id
                   ))
                   FROM variant_attributes va
                   WHERE va.variant_id = v.variant_id
@@ -214,7 +215,7 @@ router.post("/", async function (req, res, next) {
 // update product
 router.patch("/:productId", async function (req, res, next) {
     try {
-        const {title, price, description} = req.body
+        const {title, price, description, variants } = req.body
         let client = await connectDatabase()
 
         const sql = `
@@ -225,6 +226,51 @@ router.patch("/:productId", async function (req, res, next) {
             WHERE product_id = $4 RETURNING *
         `
         let {rowCount, rows} = await client.query(sql, [title, price, description, req.params.productId])
+
+
+
+        for (let variantKey in variants) {
+            let result = null
+            let vari = variants[variantKey]
+
+            if(vari.variant_id){
+                result = await client.query(
+                    `UPDATE variants
+                        SET sku = $1,
+                        product_id = $2
+                    WHERE variant_id = $3 RETURNING *`,
+                    [vari.sku, req.params.productId, vari.variant_id]
+                )
+            } else {
+                result = await client.query(
+                    `insert into variants(sku, product_id) values ($1, $2) returning variant_id`,
+                    [vari.sku, req.params.productId]
+                )
+            }
+
+
+            for (let attr of vari.attributes) {
+
+                if(attr.variant_attribute_id){
+                    result = await client.query(
+                        `UPDATE variant_attributes
+                            SET attribute_id = $1,
+                            attribute_value_id = $2,
+                            variant_id = $3
+                        WHERE variant_attribute_id = $4 RETURNING *`,
+                        [attr.attribute_id, attr.attribute_value_id, vari.variant_id, attr.variant_attribute_id]
+                    )
+                } else {
+                    // result = await client.query(
+                    //     `insert into variant_attributes(attribute_id, attribute_value_id, variant_id) values ($1, $2, $3) returning variant_id`,
+                    //     [attr.attribute_id, attr.attribute_value_id, vari.variant_id]
+                    // )
+                }
+
+            }
+
+        }
+
 
         if (rowCount) {
             res.status(201).send(rows[0])

@@ -17,7 +17,9 @@ const Products = () => {
     }
 
     function handleDelete(productId: string){
-        console.log(productId)
+        apis.delete("/products-service/api/products/" + productId).then(res => {
+            console.log(res.data)
+        })
     }
 
 
@@ -47,7 +49,7 @@ const Products = () => {
                             <td>
                                 <Link to={`/p/${prod.product_id}`}>{prod.title}</Link>
                             </td>
-                            <td>{prod?.description}</td>
+                            <td>{prod?.description?.substring(0, 200)}</td>
                             <td>
                                <div>
                                    {prod?.variants?.map((vari)=>(
