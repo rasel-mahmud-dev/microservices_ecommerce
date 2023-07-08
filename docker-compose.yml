@@ -2,6 +2,20 @@ version: '3'
 
 services:
 
+  api-gateway:
+    restart: always
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    networks:
+      - my-network
+    volumes:
+      - ./api-gateway:/app
+
+
+
   orders:
     restart: always
     build:
@@ -9,6 +23,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "1001:1001"
+    networks:
+      - my-network
     volumes:
       - ./orders:/app
 
@@ -19,6 +35,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "1000:1000"
+    networks:
+      - my-network
     volumes:
       - ./users:/app
 
@@ -29,5 +47,24 @@ services:
       dockerfile: Dockerfile
     ports:
       - "1003:1003"
+    networks:
+      - my-network
     volumes:
       - ./products:/app
+
+  mypostgress:
+    image: postgres
+    container_name: mypostgress
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=rasel
+      - POSTGRES_PASSWORD=12345
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+
+networks:
+  my-network:

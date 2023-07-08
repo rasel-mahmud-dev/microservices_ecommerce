@@ -13,7 +13,8 @@ function connectDatabase() {
                     password: "12345",
                     user: "rasel",
                     database: "product_services",
-                    host: "0.0.0.0",
+                    // host: "postgres",
+                    host: "172.17.0.1",
                     port: 5432
                 })
 

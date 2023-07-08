@@ -14,6 +14,11 @@ app.use(cors({
     }
 }))
 
+
+// app.get("*", (req, res)=>{
+//     res.status(200).send("products")
+// })
+
 app.use(router)
 
 app.use((err, req, res, next)=>{
@@ -28,6 +33,9 @@ app.listen(PORT, () => console.log("Products service is running port " + PORT))
 
 
 connectDatabase().then(client=>{
+    console.log("database connected")
     let t = readFileSync("sql/product.sql")
     let result = client.query(t.toString())
+}).catch(ex=>{
+    console.log(ex.message)
 })

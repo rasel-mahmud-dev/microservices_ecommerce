@@ -100,6 +100,14 @@ const AddProduct = () => {
                                    placeholder="Variant Value"
                             />
 
+
+                            <label>Variant Image </label>
+                            <input name="value"
+                                   type="file"
+                                   placeholder="Image"
+                            />
+
+
                         </div>
                     ))}
 
