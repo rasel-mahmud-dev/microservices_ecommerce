@@ -2,19 +2,26 @@ version: '3'
 
 services:
 
-  api-gateway:
-    restart: always
-    build:
-      context: ./api-gateway
-      dockerfile: Dockerfile
+  #  api-gateway:
+  #    restart: always
+  #    build:
+  #      context: ./api-gateway
+  #      dockerfile: Dockerfile
+  #    ports:
+  #      - "80:80"
+  #    networks:
+  #      - my-network
+  #    volumes:
+  #      - ./api-gateway:/app
+  #
+
+  nginx-container:
+    image: my-nginx2
+    container_name: nginx-container
     ports:
-      - "80:80"
+      - 80:80
     networks:
       - my-network
-    volumes:
-      - ./api-gateway:/app
-
-
 
   orders:
     restart: always
