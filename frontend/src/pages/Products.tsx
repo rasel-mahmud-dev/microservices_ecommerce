@@ -32,6 +32,7 @@ const Products = () => {
                         <th>Id</th>
                         <th>Title</th>
                         <th>Desc</th>
+                        <th>Variant</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -40,6 +41,11 @@ const Products = () => {
                             <td>{prod.product_id}</td>
                             <td>{prod.title}</td>
                             <td>{prod?.description}</td>
+                            <div>
+                                {prod?.variants?.map((vari)=>(
+                                    <div>{vari.sku}</div>
+                                ))}
+                            </div>
                         </tr>
                     ))}
                     </tbody>

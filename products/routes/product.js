@@ -7,7 +7,36 @@ router.get("/", async function (req, res, next) {
     let client = null
     try {
         client = await connectDatabase()
-        let {rows} = await client.query("select * from products")
+        let {rows} = await client.query(`
+          SELECT
+              p.product_id,
+              p.title,
+              p.description,
+              p.price,
+              json_agg(json_build_object(
+                'variant_id', v.variant_id,
+                'sku', v.sku,
+                'attributes', (
+                  SELECT json_agg(json_build_object(
+                    'attribute_id', va.attribute_id,
+                    'attribute_value_id', va.attribute_value_id,
+                    'value', av.value,
+                    'label', av.label,
+                    'name', att.name
+                  ))
+                  FROM variant_attributes va
+                  JOIN attribute_values av ON av.attribute_value_id = va.attribute_value_id
+                  JOIN attributes att ON att.attribute_id = va.attribute_id
+                  WHERE va.variant_id = v.variant_id
+                )
+              )) AS variants
+            FROM
+              products p
+            LEFT JOIN
+              variants v ON v.product_id = p.product_id
+            GROUP BY
+              p.product_id, p.title, p.description, p.price;
+        `)
         res.send(rows)
 
     } catch (ex) {
