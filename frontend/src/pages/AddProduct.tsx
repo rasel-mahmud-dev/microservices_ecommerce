@@ -32,6 +32,35 @@ type AttributeValue = {
     label?: string
 }
 
+
+interface EditProductData {
+
+    "product_id": string,
+    "title": string,
+    "description": string,
+    "price": null,
+    "variants": [
+        {
+            "variant_id": 10,
+            "sku": "SKU90001",
+            "attributes": [
+                {
+                    "attribute_id": 1,
+                    "attribute_value_id": 10
+                },
+                {
+                    "attribute_id": 2,
+                    "attribute_value_id": 16
+                },
+                {
+                    "attribute_id": 1,
+                    "attribute_value_id": 12
+                }
+            ]
+        }
+    ]
+}
+
 const AddProduct = () => {
 
     const {productId} = useParams()
@@ -46,6 +75,7 @@ const AddProduct = () => {
         return apis.get<Attribute[]>("/products-service/api/attributes").then(res => res.data)
     });
 
+
     const [variants, setVariants] = useState<Variants>({
         0: {
             sku: "",
@@ -57,10 +87,12 @@ const AddProduct = () => {
         }
     })
 
+
     const [basicData, setBasicData] = useState<{ title: string, description: string }>({
         title: "",
         description: ""
     })
+
 
     useEffect(() => {
         if (data?.data && data?.data) {
@@ -72,12 +104,40 @@ const AddProduct = () => {
 
     useEffect(() => {
         if(productId){
-            apis.get("/products-service/api/products/edit/" + productId).then(({data, status})=>{
-                console.log(data)
+            apis.get<EditProductData>("/products-service/api/products/edit/" + productId).then(({data, status})=>{
+                if(data){
+                    setUpdateProductData(data)
+                    setBasicData({
+                        title: data.title,
+                        description: data.description,
+                    })
+
+                    if(data.variants){
+                        let updateVariants: Variant[] = []
+
+                        data.variants.forEach(vari=>{
+                            let a: Attribute[] = vari.attributes.map(attr=>{
+
+                                fetchAttributeValue(attr.attribute_id)
+
+                                return ({
+                                    attribute_id: attr.attribute_id,
+                                    attribute_value_id: attr.attribute_value_id,
+                                    image: "",
+                                })
+                            })
+
+                            updateVariants.push({
+                                sku: vari.sku,
+                                attributes: a
+                            })
+                        })
+                        setVariants(updateVariants)
+                    }
+                }
             })
         }
     }, [productId]);
-
 
 
     const [attributeValue, setAttributeValue] = useState<{
@@ -176,6 +236,7 @@ const AddProduct = () => {
             fetchAttributeValue(value)
         }
     }
+
 
 
     return (

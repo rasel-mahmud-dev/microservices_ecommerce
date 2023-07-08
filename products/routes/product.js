@@ -107,14 +107,9 @@ router.get("/edit/:productId", async function (req, res, next) {
                 'attributes', (
                   SELECT json_agg(json_build_object(
                     'attribute_id', va.attribute_id,
-                    'attribute_value_id', va.attribute_value_id,
-                    'value', av.value,
-                    'label', av.label,
-                    'name', att.name
+                    'attribute_value_id', va.attribute_value_id
                   ))
                   FROM variant_attributes va
-                  JOIN attribute_values av ON av.attribute_value_id = va.attribute_value_id
-                  JOIN attributes att ON att.attribute_id = va.attribute_id
                   WHERE va.variant_id = v.variant_id
                 )
               )) AS variants
@@ -130,7 +125,7 @@ router.get("/edit/:productId", async function (req, res, next) {
         `, [req.params.productId]
 
         )
-        res.send(rows)
+        res.send(rows[0])
 
     } catch (ex) {
         next(ex)
