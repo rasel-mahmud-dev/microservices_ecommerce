@@ -28,11 +28,31 @@ attribute_id	name
 2               Size
 ...	            ...
 */
-
 class Attribute {
     attribute_id = ""
     name = "" // Color, Size, ...
+    description = ""
 }
+
+/*
+Attribute_Value Table
+attribute_value_id	    value
+1	                    Blue
+2	                    Medium
+3	                    Red
+4	                    Large
+...	                    ...
+*/
+class Attribute_Value {
+    attribute_value_id = ""
+    attribute_id = ""
+    value = ""
+    label = "" // (Optional)
+}
+
+
+
+
 
 
 
@@ -47,25 +67,9 @@ variant_attribute_id	variant_id	attribute_id
 */
 class VariantAttribute {
     variant_attribute_id = ""
-    variant_id = ""
+    variant_id = ""  // ref variant table
     attribute_id = "" // ref attribute table
-    value = ""
-}
-
-
-
-/*
-Variant Attribute_Value Table
-variant_attribute_id	value
-1	                    Blue
-2	                    Medium
-3	                    Red
-4	                    Large
-...	                    ...
-*/
-class Variant_Attribute_Value {
-    variant_attribute_id = ""
-    value = ""
+    attribute_value_id = "" //  ref attribute_value table
 }
 
 

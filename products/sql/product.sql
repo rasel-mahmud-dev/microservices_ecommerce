@@ -14,6 +14,16 @@ create table if not exists attributes (
   description varchar(1000)
 );
 
+-- attribute value table
+create table if not exists attribute_values (
+    attribute_value_id     serial not null primary key,
+    attribute_id integer references attributes(attribute_id),
+    value varchar(400),
+    label varchar(1000)
+);
+
+--ALTER TABLE attribute_values
+--ADD label varchar;
 
 -- variant value table
 create table if not exists variants (

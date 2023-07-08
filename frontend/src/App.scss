@@ -43,3 +43,12 @@ button{
 }
 
 
+select{
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 1);
+  option{
+    background: #383838;
+    color: #ffffff;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+}

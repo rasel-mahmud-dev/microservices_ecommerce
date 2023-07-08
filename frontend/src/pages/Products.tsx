@@ -1,10 +1,10 @@
 import useSWR from "swr";
-import axios from "axios";
 import {Link} from "react-router-dom";
+import apis from "../apis/axios.ts";
 
 const Products = () => {
     const {data, error} = useSWR('/api/products', () => {
-        return axios.get("/api/products").then(res => res.data)
+        return apis.get("/products-service/api/products").then(res => res.data)
     });
 
 

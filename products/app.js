@@ -19,7 +19,7 @@ app.use(cors({
 //     res.status(200).send("products")
 // })
 
-app.use(router)
+app.use("/products-service", router)
 
 app.use((err, req, res, next)=>{
     res.status(500).send({
