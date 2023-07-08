@@ -13,15 +13,19 @@ services:
   #      - my-network
   #    volumes:
   #      - ./api-gateway:/app
-  #
 
-  nginx-container:
-    image: my-nginx2
-    container_name: nginx-container
+
+  api-gateway:
+    build:
+      dockerfile: Dockerfile
+    image: nginx
+    container_name: api-gateway
     ports:
       - 80:80
     networks:
       - my-network
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
 
   orders:
     restart: always

@@ -8,14 +8,15 @@ RUN rm /etc/nginx/nginx.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 
 
+
+
 ## Use an official Node.js runtime as the base image
 #FROM node:18-slim
 #
 ## Set the working directory inside the container
 #WORKDIR /app
-#
-#
-#
+
+
 #COPY package*.json ./
 #
 ## install npm dependency
