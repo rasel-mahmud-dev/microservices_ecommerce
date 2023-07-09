@@ -54,11 +54,17 @@ input, textarea, select {
   box-sizing: border-box;
 }
 
+input[type=color]{
+  padding: 0;
+  outline: none;
+  height: 38px;
+}
+
 button {
   display: block;
   background: #f77216;
   border: 1px solid #f77216;
-  padding: 10px 8px;
+  padding: 10px 16px;
 }
 
 

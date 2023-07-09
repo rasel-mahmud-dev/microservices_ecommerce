@@ -1,7 +1,10 @@
 import useSWR from 'swr';
 import apis from "../../apis/axios.ts";
 import {Attribute, AttributeValueGroup} from "../../interface";
-import React from "react";
+import React, {useState} from "react";
+import {BsHeart} from "react-icons/bs";
+import {FaEdit} from "react-icons/fa";
+import AddAttribute from "./AddAttribute.tsx";
 
 
 const Attributes = () => {
@@ -10,9 +13,21 @@ const Attributes = () => {
         return apis.get<Attribute[]>("/products-service/api/attributes").then(res => res.data)
     });
 
+    const [isOpen, setOpen] = useState(false)
+    const [editItem, setEditItem] = useState<Attribute & {
+        values: Array<{
+            attribute_value_id: string;
+            value: string;
+            label?: string;
+        }> | null;
+    } | null>(null)
 
     const attributeValuesRes = useSWR('/api/attribute-values', () => {
-        return apis.get<AttributeValueGroup[]>("/products-service/api/attribute-value?group_by=attribute_id").then(res => res.data)
+        return apis.get<Array<Attribute & { values: {
+                attribute_value_id: string;
+                value: string;
+                label?: string;
+        } | undefined }>>("/products-service/api/attribute-value?group_by=attribute_id").then(res => res.data)
     });
 
     function renderColor(attrValue = []) {
@@ -46,7 +61,21 @@ const Attributes = () => {
 
     return (
         <div className="card">
-            <h4>Attributes</h4>
+
+            <div className="flex justify-between items-center">
+                <h4>Attributes</h4>
+                <button onClick={()=> {
+                    setEditItem(null);
+                    setOpen(true)
+                }}>Add new</button>
+            </div>
+
+            <div>
+
+                { isOpen && <AddAttribute onClose={()=>setOpen(false)} edit={editItem} /> }
+
+            </div>
+
             <table>
                 <thead>
                 <tr>
@@ -54,6 +83,7 @@ const Attributes = () => {
                     <th>Name</th>
                     <th>Desc</th>
                     <th>Values</th>
+                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -73,6 +103,25 @@ const Attributes = () => {
                                         }
                                     </div>
                                 ))}
+                            </div>
+                        </td>
+                        <td>
+                            <div className="flex items-center gap-x-2">
+
+                                <div onClick={()=>{
+                                    setEditItem({
+                                        ...attr,
+                                        values: attributeValuesRes?.data?.find(av=>av.attribute_id === attr.attribute_id)?.values
+                                    })
+                                    setOpen(true)
+                                }} className="rounded-full w-6 h-6 bg-gray-700 flex items-center justify-center">
+                                    <FaEdit className="text-xs" />
+                                </div>
+
+                                <div className="rounded-full w-6 h-6 bg-gray-700 flex items-center justify-center">
+                                    <BsHeart className="text-xs" />
+                                </div>
+
 
                             </div>
                         </td>
@@ -80,6 +129,10 @@ const Attributes = () => {
                 ))}
                 </tbody>
             </table>
+
+
+
+
         </div>
     );
 };

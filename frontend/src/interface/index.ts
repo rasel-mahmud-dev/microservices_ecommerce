@@ -3,7 +3,6 @@ export type Attribute = {
     name: string
     description: string
     attribute_value_id: string
-
 }
 
 
