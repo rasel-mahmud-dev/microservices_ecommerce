@@ -3,12 +3,12 @@
 }
 
 
-.container{
+.container {
   max-width: 1200px;
   margin: auto;
 }
 
-header{
+header {
   background: #111111;
   padding: 6px 30px;
   box-shadow: 0 5px 8px 0 #0d0d0d;
@@ -18,8 +18,9 @@ header{
   width: 100%;
   left: 0;
 }
-.header-space{
-  height: 120px;
+
+.header-space {
+  height: 90px;
 }
 
 .card {
@@ -53,7 +54,7 @@ input, textarea, select {
   box-sizing: border-box;
 }
 
-button{
+button {
   display: block;
   background: #f77216;
   border: 1px solid #f77216;
@@ -61,12 +62,30 @@ button{
 }
 
 
-select{
+select {
   color: #fff;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 1);
-  option{
+
+  option {
     background: #383838;
     color: #ffffff;
     text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+  }
+}
+
+.homepage {
+  display: flex;
+  column-gap: 20px;
+
+  & > div:nth-child(1) {
+    width: 400px;
+    background: #484848;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  & > div:nth-child(2) {
+    width: 100%;
+    box-sizing: border-box;
   }
 }

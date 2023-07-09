@@ -12,6 +12,7 @@ import Navigation from "./components/Navigation.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import RegistrationPage from "./pages/RegistrationPage.tsx";
 import apis from "./apis/axios.ts";
+import Dashboard from "./pages/admin/Dashboard.tsx";
 
 function App() {
     const [count, setCount] = useState(0)
@@ -35,16 +36,26 @@ function App() {
                 <div className="header-space"></div>
 
 
-                <div className="container">
+                <div className="">
                     <Routes>
-                        <Route path="/" element={<HomePage/>}/>
-                        <Route path="/products" element={<Products/>}/>
-                        <Route path="/p/:productId" element={<ProductDetail/>}/>
-                        <Route path="/add-product" element={<AddProduct/>}/>
-                        <Route path="/update-product/:productId" element={<AddProduct/>}/>
-                        <Route path="/attributes" element={<Attributes/>}/>
-                        <Route path="/login" element={<LoginPage/>}/>
-                        <Route path="/registration" element={<RegistrationPage/>}/>
+                        <Route path="/" element={<HomePage/>} children={(
+                            <>
+                                <Route path="/products" element={<Products/>}/>
+                                <Route path="/p/:productId" element={<ProductDetail/>}/>
+                                <Route path="/add-product" element={<AddProduct/>}/>
+                                <Route path="/update-product/:productId" element={<AddProduct/>}/>
+                                <Route path="/attributes" element={<Attributes/>}/>
+                                <Route path="/login" element={<LoginPage/>}/>
+                                <Route path="/registration" element={<RegistrationPage/>}/>
+                            </>
+                        )}/>
+
+
+                        <Route path="/dashboard" children={(
+                            <>
+                                <Route path="attribute-value" element={<RegistrationPage/>}/>
+                            </>
+                        )} element={<Dashboard/>}/>
                     </Routes>
                 </div>
             </BrowserRouter>

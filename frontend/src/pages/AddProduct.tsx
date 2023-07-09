@@ -2,15 +2,9 @@ import React, {useEffect, useState} from 'react';
 import useSWR from "swr";
 import apis from "../apis/axios.ts";
 import {useParams} from "react-router-dom";
+import {Attribute} from "../interface";
 
 
-type Attribute = {
-    attribute_id: string,
-    name: string
-    description: string
-    attribute_value_id: string
-
-}
 
 type VariantKey = number
 
