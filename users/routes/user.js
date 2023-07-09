@@ -73,7 +73,7 @@ router.post("/login", async function (req, res, next) {
         let user = result.rows[0]
         if (user.password !== password) return next("Your password wrong")
 
-        const token = jwt.sign({user_id: user.user_id}, "MY_SUPER_SECRET", {expiresIn: "1min"})
+        const token = jwt.sign({user_id: user.user_id}, process.env.SECRET, {expiresIn: "1min"})
 
         delete user["password"]
 
@@ -94,7 +94,7 @@ router.get("/validate", async function (req, res, next) {
         let client = await connectDatabase()
 
         const token = req.headers["token"]
-        let data = jwt.decode(token, {secretKey: "MY_SUPER_SECRET"})
+        let data = jwt.decode(token, {secretKey: process.env.SECRET})
 
         if (!data) return next("Token expired, Please login first")
 

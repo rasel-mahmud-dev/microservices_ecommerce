@@ -1,30 +1,65 @@
-import React, {useState} from 'react';
+import  {ChangeEvent, FormEvent, useState} from 'react';
 import {Link} from "react-router-dom";
 import apis from "../apis/axios.ts";
+import  {AxiosResponse} from "axios";
 
 const RegistrationPage = () => {
 
-    const [userData, setUserData] = useState({
+    const [userData, setUserData] = useState<{
+        email: string,
+        password: string,
+        username: string,
+        avatar: string,
+        avatarBlob?: File
+    }>({
         email: "",
         password: "",
-        username: ""
+        username: "",
+        avatar: "",
+        avatarBlob: undefined
     })
 
-    function handleChange(e) {
+
+    function handleChange(e: ChangeEvent<HTMLInputElement>) {
         setUserData(prev => ({
             ...prev,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.name === "avatarBlob"
+                ? ((e.target) as { files: FileList }).files[0]
+                : e.target.value
         }))
     }
 
-    function handleSubmit(e){
-        e.preventDefault();
 
-        apis.post("/users-service/api/users/create", {
-            username: userData.username,
-            email: userData.email,
-            password: userData.password,
-        })
+    async function handleSubmit(e: FormEvent<HTMLFormElement>){
+        e.preventDefault()
+
+        // first uploaded image
+
+        try{
+            let response: AxiosResponse<{url: string}> | undefined = undefined
+            if(userData.avatarBlob) {
+                const formData = new FormData()
+                formData.append("image", userData.avatarBlob, userData.avatarBlob.name)
+                formData.append("folder", "avatar")
+                response = await apis.post("/products-service/api/upload-image", formData)
+            }
+
+            let avatar: string = ""
+
+            if(response && response.status === 200){
+                avatar = response.data.url
+            }
+
+            await apis.post("/users-service/api/users/create", {
+                username: userData.username,
+                email: userData.email,
+                avatar: avatar,
+                password: userData.password,
+            })
+
+        } catch (ex){
+
+        }
     }
 
     return (
@@ -53,6 +88,11 @@ const RegistrationPage = () => {
                         name="password"
                         value={userData.password}
                         placeholder="Password"
+                    />
+                    <input
+                        type="file"
+                        onChange={handleChange}
+                        name="avatarBlob"
                     />
                 </div>
                 <div className="text-sm my-4">Already have an account ? <Link to="/login">login</Link></div>

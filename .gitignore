@@ -1,7 +1,14 @@
 api-gateway/node_modules
 api-gateway/nginx
+
 orders/node_modules
+orders/.env
+
 users/node_modules
+users/.env
+
 products/node_modules
+products/.env
+
 database/**
 frontend/node_modules
