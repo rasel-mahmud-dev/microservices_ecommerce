@@ -34,7 +34,7 @@ app.listen(PORT, () => console.log("Products service is running port " + PORT))
 
 connectDatabase().then(client=>{
     console.log("database connected")
-    let t = readFileSync("sql/product.sql")
+    let t = readFileSync("sql/tables.sql")
     let result = client.query(t.toString())
 }).catch(ex=>{
     console.log(ex.message)

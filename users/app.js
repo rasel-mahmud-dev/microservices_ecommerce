@@ -1,23 +1,39 @@
 const express = require("express")
+const cors = require("cors")
+const router = require("./routes");
+
+const {readFileSync} = require("fs");
+const connectDatabase = require("./database");
 
 const app = express()
 
+app.use(express.json())
+app.use(cors({
+    origin: function (origin, callback) {
+        console.log(origin)
+        callback(null, true)
+    }
+}))
 
 
 
-app.get("/api/users", (req, res, next)=>{
-    res.send("users sd sdf")
+app.use("/users-service", router)
+
+app.use((err, req, res, next)=>{
+    res.status(500).send({
+        message: typeof err === "string" ? err : err?.message
+    })
 })
 
 
-app.get("/api/users/:userId", (req, res, next)=>{
-    res.send(req.params.userId + " single user")
+const PORT = process.env.PORT || 1000
+app.listen(PORT, () => console.log("Users service is running on port " + PORT))
+
+
+connectDatabase().then(client=>{
+    console.log("database connected")
+    let t = readFileSync("sql/tables.sql")
+    let result = client.query(t.toString())
+}).catch(ex=>{
+    console.log(ex.message)
 })
-
-app.get("/api/users/create", (req, res, next)=>{
-    res.send("regisas sd sdf")
-})
-
-
-app.listen(1000, ()=>console.log("User service is running on port 1000"))
-

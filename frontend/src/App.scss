@@ -1,8 +1,26 @@
 #root {
+
+}
+
+
+.container{
   max-width: 1200px;
   margin: auto;
 }
 
+header{
+  background: #111111;
+  padding: 6px 30px;
+  box-shadow: 0 5px 8px 0 #0d0d0d;
+  margin-bottom: 40px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  left: 0;
+}
+.header-space{
+  height: 120px;
+}
 
 .card {
   background: #2f2f2f;

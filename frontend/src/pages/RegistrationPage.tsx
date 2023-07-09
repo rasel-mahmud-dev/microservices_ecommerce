@@ -1,10 +1,13 @@
 import React, {useState} from 'react';
+import {Link} from "react-router-dom";
+import apis from "../apis/axios.ts";
 
-const LoginPage = () => {
+const RegistrationPage = () => {
 
     const [userData, setUserData] = useState({
         email: "",
-        password: ""
+        password: "",
+        username: ""
     })
 
     function handleChange(e) {
@@ -17,8 +20,11 @@ const LoginPage = () => {
     function handleSubmit(e){
         e.preventDefault();
 
-
-
+        apis.post("/users-service/api/users/create", {
+            username: userData.username,
+            email: userData.email,
+            password: userData.password,
+        })
     }
 
     return (
@@ -27,6 +33,13 @@ const LoginPage = () => {
 
                 <div>
                     <h2>Basic info</h2>
+                    <input
+                        type="text"
+                        onChange={handleChange}
+                        name="username"
+                        value={userData.username}
+                        placeholder="Username"
+                    />
                     <input
                         type="email"
                         onChange={handleChange}
@@ -42,10 +55,11 @@ const LoginPage = () => {
                         placeholder="Password"
                     />
                 </div>
-                <button>Login</button>
+                <div className="text-sm my-4">Already have an account ? <Link to="/login">login</Link></div>
+                <button>Create</button>
             </form>
         </div>
     );
 };
 
-export default LoginPage;
+export default RegistrationPage;

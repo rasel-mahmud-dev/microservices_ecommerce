@@ -8,13 +8,14 @@ export type Auth = {
 
 }
 
-interface AuthState {
+export interface AuthState {
     auth: Auth | null
+    setAuth: (payload: Auth) => void
 }
 
 const useAuthState = create<AuthState>(set => ({
     auth: null,
-    setAuth: (payload: Auth) => set({
+    setAuth: (payload) => set({
         auth: payload
     })
 }))
