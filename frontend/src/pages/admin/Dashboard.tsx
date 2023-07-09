@@ -6,19 +6,18 @@ const Dashboard = () => {
         <div className="dashboard">
             <div>
                 <h4 className="text-gray-100">Dashboard</h4>
-
-                <ul>
-                    <li>
+                <ul className="m-0 p-0">
+                    <li className="font-medium text-sm list-none py-2">
+                        <Link to="/dashboard/product-list">Product List</Link>
+                    </li>
+                    <li className="font-medium text-sm list-none py-2">
                         <Link to="/dashboard/attributes">Attributes</Link>
                     </li>
                 </ul>
-
             </div>
-
             <div className="w-full">
-                <Outlet />
+                <Outlet/>
             </div>
-
         </div>
     );
 };

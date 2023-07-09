@@ -2,10 +2,16 @@
 
 }
 
+@mixin getDown($size){
+  @media screen and (max-width: #{$size}) {
+    @content
+  }
+}
 
 .container {
-  max-width: 1200px;
+  max-width: 1200px !important;
   margin: auto;
+  box-sizing: border-box;
 }
 
 header {
@@ -17,6 +23,8 @@ header {
   top: 0;
   width: 100%;
   left: 0;
+  z-index: 100;
+  box-sizing: border-box;
 }
 
 .header-space {
@@ -41,7 +49,6 @@ table {
   }
 }
 
-
 input, textarea, select {
   background: transparent;
   border: 1px solid #f77216;
@@ -58,6 +65,38 @@ input[type=color]{
   padding: 0;
   outline: none;
   height: 38px;
+
+}
+
+input[type=checkbox]{
+  padding: 0;
+  outline: none;
+  width: max-content;
+  margin: 0;
+  position: relative;
+  appearance: none;
+  &:before{
+    content: "";
+    border: 1px solid #f77216;
+    background: transparent;
+    position: absolute;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    transform: translate(-50%, -50%);
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+  &:checked{
+    &:before{
+      content: "";
+      border: 1px solid #f77216;
+      background: #f77216;
+    }
+  }
+
+
 }
 
 button {
@@ -66,7 +105,6 @@ button {
   border: 1px solid #f77216;
   padding: 10px 16px;
 }
-
 
 select {
   color: #fff;
@@ -90,10 +128,32 @@ select {
     padding: 20px;
     box-sizing: border-box;
     min-height: 100vh;
+
+    @include getDown(860px){
+      display: none;
+    }
+
+
   }
 
   & > div:nth-child(2) {
     width: 100%;
     box-sizing: border-box;
+  }
+}
+
+.p-card{
+  background: #1d1d1d;
+  border-radius: 5px;
+  //overflow: hidden;
+  img{
+    width: 100%;
+    max-height: 200px;
+    //height: 100%;
+    object-fit: contain;
+  }
+
+  .p-card-content{
+    padding: 16px;
   }
 }

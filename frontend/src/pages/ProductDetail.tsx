@@ -75,7 +75,7 @@ const ProductDetail = () => {
                                 <div>
 
                                     <img className="w-full"
-                                         src="https://img.freepik.com/free-vector/white-product-podium-with-green-tropical-palm-leaves-golden-round-arch-green-wall_87521-3023.jpg"
+                                         src={productDetail?.image}
                                          alt=""/>
                                 </div>
 

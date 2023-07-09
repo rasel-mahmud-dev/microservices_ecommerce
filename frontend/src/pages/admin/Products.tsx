@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import {Link} from "react-router-dom";
-import apis from "../apis/axios.ts";
+import apis from "../../apis/axios.ts";
 
 const Products = () => {
     const {data, error} = useSWR('/api/products', () => {
@@ -28,7 +28,7 @@ const Products = () => {
             <div className="card">
                 <div className="flex justify-between items-center">
                     <h4>Products</h4>
-                    <Link to="/add-product">
+                    <Link to="/dashboard/add-product">
                         <button>Add Product</button>
                     </Link>
                 </div>
@@ -60,7 +60,7 @@ const Products = () => {
                             <td>
                                 <div className="flex gap-x-2">
                                     <button onClick={()=>handleDelete(prod.product_id)}>Delete</button>
-                                    <Link to={`/update-product/${prod.product_id}`}><button>Edit</button></Link>
+                                    <Link to={`/dashboard/update-product/${prod.product_id}`}><button>Edit</button></Link>
                                 </div>
                             </td>
                         </tr>

@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import useSWR from "swr";
-import apis from "../apis/axios.ts";
+import apis from "../../apis/axios.ts";
 import {useParams} from "react-router-dom";
-import {Attribute} from "../interface";
+import {Attribute} from "../../interface";
+import {AxiosResponse} from "axios";
 
 
 
@@ -84,9 +85,17 @@ const AddProduct = () => {
     })
 
 
-    const [basicData, setBasicData] = useState<{ title: string, description: string, price?: number }>({
+    const [basicData, setBasicData] = useState<{
+        imageBlob?: File,
+        title: string,
+        description: string,
+        price?: number
+        image?: string
+    }>({
         title: "",
         price: 0,
+        imageBlob: undefined,
+        image: "",
         description: ""
     })
 
@@ -108,6 +117,7 @@ const AddProduct = () => {
                         title: data.title,
                         price: data.price || 0,
                         description: data.description,
+                        image: data.image,
                     })
 
                     if (data.variants) {
@@ -199,19 +209,33 @@ const AddProduct = () => {
 
         try {
 
+            let image = basicData.image
+            let response: AxiosResponse<{url: string}> | undefined
+            if(basicData.imageBlob) {
+                const formData = new FormData()
+                formData.append("image", basicData.imageBlob, basicData.imageBlob.name)
+                formData.append("folder", "product")
+                response = await apis.post("/products-service/api/upload-image", formData)
+                if(response?.data && response?.data.url){
+                    image = response?.data.url as string
+                }
+            }
+
             if (productId) {
-                let response = await apis.patch("/products-service/api/products/" + productId, {
+                response = await apis.patch("/products-service/api/products/" + productId, {
                     variants: variants,
                     title: basicData.title,
+                    image: image,
                     price: basicData.price,
                     description: basicData.description,
                 })
                 console.log(response)
             } else {
-                let response = await apis.post("/products-service/api/products", {
+                response = await apis.post("/products-service/api/products", {
                     variants: variants,
                     price: basicData.price,
                     title: basicData.title,
+                    image: image,
                     description: basicData.description,
                 })
                 console.log(response)
@@ -256,9 +280,7 @@ const AddProduct = () => {
 
 
     return (
-        <div>
-
-            <form onSubmit={handleSubmit} className="max-w-xl mx-auto">
+            <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
 
                 <div>
                     <h2>Basic info</h2>
@@ -283,6 +305,19 @@ const AddProduct = () => {
                         name="description"
                         value={basicData.description}
                     />
+
+                    <input
+                        type="file"
+                        onChange={(e)=>handleChange({target: { name: "imageBlob", value: e?.target?.files?.[0] as  unknown as string }})}
+                        name="imageBlob"
+                    />
+
+                    { basicData.image && (
+                        <div className="">
+                            <img className="object-cover w-[150px]" src={basicData.image} alt=""/>
+                        </div>
+                    ) }
+
                 </div>
 
 
@@ -371,13 +406,8 @@ const AddProduct = () => {
                         {productId ? "Update " : "Add "} Product
                     </button>
 
-
                 </div>
-
-
             </form>
-
-        </div>
     );
 };
 

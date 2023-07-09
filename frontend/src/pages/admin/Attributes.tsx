@@ -32,13 +32,13 @@ const Attributes = () => {
 
     function renderColor(attrValue = []) {
         return (
-            <div className="flex gap-1">
+            <div className="flex gap-y-1  gap-x-4 flex-wrap">
                 {attrValue.map(attrV => (
-                    <div>
-                        <div className="w-4 h-4 rounded-full"
+                    <div className="flex items-center gap-1">
+                        <div className="w-4 h-4 rounded-full "
                              style={{background: attrV.value}}>
                         </div>
-                        <label htmlFor="">{attrV.label}</label>
+                        <label htmlFor="" className="text-xs">{attrV.label}</label>
                     </div>
                 ))}
             </div>
@@ -47,10 +47,23 @@ const Attributes = () => {
 
     function renderSize(attrValue = []) {
         return (
-            <div className="flex gap-1">
+            <div className="flex gap-1 flex-wrap">
+                {attrValue.map(attrV => (
+
+                        <div className="w-5 h-5 flex items-center justify-center rounded-full bg-gray-600 text-xs p-1">
+                            {attrV.value}
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    function renderOther(attrValue = []) {
+        return (
+            <div className="flex gap-1 flex-wrap">
                 {attrValue.map(attrV => (
                     <div>
-                        <div className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-600 text-xs">
+                        <div className="flex items-center justify-center rounded-full bg-gray-600 text-xs p-1">
                             {attrV.value}
                         </div>
                     </div>
@@ -88,18 +101,20 @@ const Attributes = () => {
                 </thead>
                 <tbody>
                 {attributeRes.data?.map((attr) => (
-                    <tr key={attr.attribute_id}>
+                    <tr key={attr.attribute_id}  className="" style={{verticalAlign: "top"}}>
                         <td>{attr.attribute_id}</td>
                         <td>{attr.name}</td>
                         <td>{attr.description}</td>
                         <td>
-                            <div>
+                            <div className="flex flex-wrap">
 
                                 {attributeValuesRes?.data?.map(attrValue => attrValue.attribute_id === attr.attribute_id && (
                                     <div>
                                         {attr.name === "color"
                                             ? renderColor(attrValue?.values)
-                                            : renderSize(attrValue?.values)
+                                            : attr.name === "size"
+                                                ? renderSize(attrValue?.values)
+                                                : renderOther(attrValue?.values)
                                         }
                                     </div>
                                 ))}
