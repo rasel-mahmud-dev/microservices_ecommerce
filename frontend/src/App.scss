@@ -73,15 +73,17 @@ select {
   }
 }
 
-.homepage {
+.homepage, .dashboard {
   display: flex;
   column-gap: 20px;
 
+
   & > div:nth-child(1) {
     width: 400px;
-    background: #484848;
+    background: #313131;
     padding: 20px;
     box-sizing: border-box;
+    min-height: 100vh;
   }
 
   & > div:nth-child(2) {

@@ -4,7 +4,7 @@ import useAuthState from "./store/authState.ts";
 import {BrowserRouter, NavLink, Route, Routes} from "react-router-dom";
 import Products from "./pages/Products.tsx";
 
-import Attributes from "./pages/Attributes.tsx";
+import Attributes from "./pages/admin/Attributes.tsx";
 import AddProduct from "./pages/AddProduct.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import HomePage from "./pages/HomePage.tsx";
@@ -53,6 +53,7 @@ function App() {
 
                         <Route path="/dashboard" children={(
                             <>
+                                <Route path="attributes" element={<Attributes/>}/>
                                 <Route path="attribute-value" element={<RegistrationPage/>}/>
                             </>
                         )} element={<Dashboard/>}/>
