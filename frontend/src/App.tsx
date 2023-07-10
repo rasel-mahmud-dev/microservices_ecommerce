@@ -1,19 +1,26 @@
-import {useEffect, useState} from 'react'
+import {lazy, Suspense, useEffect, useState} from 'react'
 import './App.scss'
 import useAuthState from "./store/authState.ts";
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Products from "./pages/admin/Products.tsx";
-
-import Attributes from "./pages/admin/Attributes.tsx";
-import AddProduct from "./pages/admin/AddProduct.tsx";
-import ProductDetail from "./pages/ProductDetail.tsx";
-import HomePage from "./pages/HomePage.tsx";
-import Navigation from "./components/Navigation.tsx";
-import LoginPage from "./pages/LoginPage.tsx";
-import RegistrationPage from "./pages/RegistrationPage.tsx";
+import {Toaster} from "react-hot-toast";
 import apis from "./apis/axios.ts";
-import Dashboard from "./pages/admin/Dashboard.tsx";
-import HomeLayout from "./pages/HomeLayout.tsx";
+
+const Products  = lazy(()=>import( "./pages/admin/Products.tsx"));
+const Attributes  = lazy(()=>import( "./pages/admin/Attributes.tsx"));
+const AddProduct  = lazy(()=>import( "./pages/admin/AddProduct.tsx"));
+const ProductDetail  = lazy(()=>import( "./pages/ProductDetail.tsx"));
+const HomePage  = lazy(()=>import( "./pages/HomePage.tsx"));
+const Navigation  = lazy(()=>import( "./components/Navigation.tsx"));
+const LoginPage  = lazy(()=>import( "./pages/LoginPage.tsx"));
+const RegistrationPage  = lazy(()=>import( "./pages/RegistrationPage.tsx"));
+// const Dashboard  = lazy(()=>import( "./pages/admin/Dashboard.tsx"));
+
+
+// const HomeLayout  = lazy(()=>import( "./pages/HomeLayout.tsx"));
+
+import HomeLayout   from "./pages/HomeLayout.tsx"
+import Dashboard   from "./pages/admin/Dashboard.tsx"
+
 
 function App() {
     const [count, setCount] = useState(0)
@@ -39,17 +46,20 @@ function App() {
 
                 <div className="">
                     <Routes>
-                        <Route path="/" element={<HomeLayout/>} children={(
-                            <>
-                                <Route path="" element={<HomePage/>}/>
-                                <Route path="p/:productId" element={<ProductDetail/>}/>
-                                <Route path="login" element={<LoginPage/>}/>
-                                <Route path="registration" element={<RegistrationPage/>}/>
-                            </>
-                        )}/>
 
 
-                        <Route path="/dashboard" children={(
+                            <Route path="/" element={<HomeLayout/>} children={(
+                                <>
+                                    <Route path="" element={<HomePage/>}/>
+                                    <Route path="p/:productId" element={<ProductDetail/>}/>
+                                    <Route path="login" element={<LoginPage/>}/>
+                                    <Route path="registration" element={<RegistrationPage/>}/>
+                                </>
+                            )}/>
+
+
+
+                        <Route path="/dashboard"  children={(
                             <>
                                 <Route path="attributes" element={<Attributes/>}/>
                                 <Route path="product-list" element={<Products/>}/>
@@ -59,6 +69,9 @@ function App() {
                             </>
                         )} element={<Dashboard/>}/>
                     </Routes>
+
+                    <Toaster />
+
                 </div>
             </BrowserRouter>
         </div>

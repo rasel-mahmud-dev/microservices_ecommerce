@@ -4,6 +4,7 @@ import apis from "../../apis/axios.ts";
 import {useParams} from "react-router-dom";
 import {Attribute} from "../../interface";
 import {AxiosResponse} from "axios";
+import useCustomToast from "../../hooks/useCustomToast.tsx";
 
 
 
@@ -62,6 +63,9 @@ interface EditProductData {
 const AddProduct = () => {
 
     const {productId} = useParams()
+
+
+    let toast = useCustomToast()
 
 
     const [updateProductData, setUpdateProductData] = useState({})
@@ -207,6 +211,7 @@ const AddProduct = () => {
     async function handleSubmit(e) {
         e.preventDefault();
 
+
         try {
 
             let image = basicData.image
@@ -243,7 +248,11 @@ const AddProduct = () => {
 
 
         } catch (ex) {
-            console.log(ex)
+            let msg = ex?.response?.data?.message || "Product update or add fail"
+            toast(
+                <p className="m-0 px-4">{msg}</p>, true
+            )
+
         }
 
     }

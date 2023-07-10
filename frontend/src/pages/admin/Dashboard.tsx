@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Suspense} from 'react';
 import {Link, Outlet} from "react-router-dom";
 
 const Dashboard = () => {
@@ -16,7 +16,9 @@ const Dashboard = () => {
                 </ul>
             </div>
             <div className="w-full">
-                <Outlet/>
+                <Suspense fallback={<h1>Admin Dashboard Outlet loading</h1>}>
+                    <Outlet/>
+                </Suspense>
             </div>
         </div>
     );

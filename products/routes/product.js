@@ -1,4 +1,5 @@
 const connectDatabase = require("../database");
+const {func} = require("joi");
 const router = require("express").Router()
 
 
@@ -13,6 +14,7 @@ router.get("/", async function (req, res, next) {
               p.title,
               p.description,
               p.price,
+              p.image,
               json_agg(json_build_object(
                 'variant_id', v.variant_id,
                 'sku', v.sku,
@@ -55,6 +57,7 @@ router.get("/:productId", async function (req, res, next) {
               p.product_id,
               p.title,
               p.description,
+              p.image,
               p.price,
               json_agg(json_build_object(
                 'variant_id', v.variant_id,
@@ -90,7 +93,7 @@ router.get("/:productId", async function (req, res, next) {
     }
 })
 
-// get all products
+// get product detail for edit,
 router.get("/edit/:productId", async function (req, res, next) {
 
     try {
@@ -100,6 +103,7 @@ router.get("/edit/:productId", async function (req, res, next) {
               p.product_id,
               p.title,
               p.description,
+              p.image,
               p.price,
               json_agg(json_build_object(
                 'variant_id', v.variant_id,
@@ -140,6 +144,7 @@ router.post("/", async function (req, res, next) {
         const {
             title,
             price,
+            image = "",
             description,
             variants
         } = req.body
@@ -150,8 +155,8 @@ router.post("/", async function (req, res, next) {
 
         // step 1 create variant
         // create product
-        const sql = `insert into products(title, price, description) values ($1, $2, $3) returning product_id`
-        let result = await client.query(sql, [title, price, description])
+        const sql = `insert into products(title, price, description, image) values ($1, $2, $3, $4) returning product_id`
+        let result = await client.query(sql, [title, price, description, image])
         let product_id;
         if (result.rowCount) {
             product_id = result.rows[0].product_id
@@ -212,27 +217,62 @@ router.post("/", async function (req, res, next) {
 })
 
 
+async function variantAttributes(attributes, variant_id, client){
+    for (let attr of attributes) {
+        // Create or update variant attribute
+
+        if(!(attr.attribute_value_id && variant_id)) continue
+
+        let result;
+
+        if(attr.variant_attribute_id){
+            result = await client.query(
+                `UPDATE variant_attributes
+                            SET attribute_id = $1,
+                            attribute_value_id = $2,
+                            variant_id = $3
+                        WHERE variant_attribute_id = $4 RETURNING *`,
+                [attr.attribute_id, attr.attribute_value_id, variant_id, attr.variant_attribute_id]
+            )
+        } else {
+
+            if(attr.attribute_id){
+                result = await client.query(
+                    `insert into variant_attributes(attribute_id, attribute_value_id, variant_id) values($1, $2, $3) returning *`,
+                    [attr.attribute_id, attr.attribute_value_id, variant_id]
+                )
+            }
+        }
+    }
+}
+
 // update product
 router.patch("/:productId", async function (req, res, next) {
     try {
-        const {title, price, description, variants } = req.body
+        const {title, price, description, variants, image = "", } = req.body
         let client = await connectDatabase()
+
+        if(!req.params.productId) return next("Product id is required.")
 
         const sql = `
             UPDATE products
                 SET title = $1,
                 price = $2,
-                description = $3 
-            WHERE product_id = $4 RETURNING *
+                image = $3,
+                description = $4 
+            WHERE product_id = $5 RETURNING *
         `
-        let {rowCount, rows} = await client.query(sql, [title, price, description, req.params.productId])
-
-
+        let {rowCount, rows} = await client.query(sql, [title, price, image, description, req.params.productId])
 
         for (let variantKey in variants) {
             let result = null
             let vari = variants[variantKey]
 
+            /**** skip if sku is not provided ****/
+            if(!vari.sku) continue;
+
+
+            // Create or update variant
             if(vari.variant_id){
                 result = await client.query(
                     `UPDATE variants
@@ -248,28 +288,16 @@ router.patch("/:productId", async function (req, res, next) {
                 )
             }
 
+            // skip create all attributes under current variant.
+            if(result.rowCount === 0) continue;
 
-            for (let attr of vari.attributes) {
+            const variantId = result.rows[0]?.variant_id
+            if(!variantId) continue;
 
-                if(attr.variant_attribute_id){
-                    result = await client.query(
-                        `UPDATE variant_attributes
-                            SET attribute_id = $1,
-                            attribute_value_id = $2,
-                            variant_id = $3
-                        WHERE variant_attribute_id = $4 RETURNING *`,
-                        [attr.attribute_id, attr.attribute_value_id, vari.variant_id, attr.variant_attribute_id]
-                    )
-                } else {
-                    // result = await client.query(
-                    //     `insert into variant_attributes(attribute_id, attribute_value_id, variant_id) values ($1, $2, $3) returning variant_id`,
-                    //     [attr.attribute_id, attr.attribute_value_id, vari.variant_id]
-                    // )
-                }
-
-            }
-
+            // Create or update variant attribute
+            variantAttributes(vari.attributes, variantId, client)
         }
+
 
 
         if (rowCount) {

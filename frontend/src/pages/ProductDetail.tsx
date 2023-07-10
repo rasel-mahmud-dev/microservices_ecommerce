@@ -1,6 +1,9 @@
 import {useParams} from "react-router-dom";
 import apis from "../apis/axios.ts";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
+import attributeGroupFn from "../utils/attributeGroupFn.ts";
+import useSWR from "swr";
+import {Attribute} from "../interface";
 
 const ProductDetail = () => {
 
@@ -13,10 +16,34 @@ const ProductDetail = () => {
     useEffect(() => {
         if (productId) {
             apis.get("/products-service/api/products/" + productId).then(res => {
-                setProductDetail(res.data)
+                const product = res.data
+                setProductDetail(product)
+
+                let attributeGroup = attributeGroupFn(product?.variants)
+                console.log(attributeGroup)
+                product.attributeGroup = attributeGroup
+
             })
         }
     }, [productId]);
+
+    const [selectVariant, setSelectVariant] = useState({
+
+    })
+
+
+
+    const attributeRes = useSWR('/api/attributes', () => {
+        return apis.get<Attribute[]>("/products-service/api/attributes").then(res => res.data)
+    });
+
+    function getAttribute(attributeId?: string) {
+        if (attributeRes && attributeRes?.data) {
+            let a = attributeRes.data.find(attr => String(attr.attribute_id) === attributeId)
+            return a
+        }
+        return {}
+    }
 
     function renderGroupAttribute(attributes) {
         let group = {}
@@ -63,46 +90,97 @@ const ProductDetail = () => {
         )
     }
 
+    function handleChooseVariant(av) {
+        const {
+                attribute_id,
+                attribute_value_id,
+                label,
+                sku,
+                variant_id
+        } = av
+        setSelectVariant({
+            variant_id: variant_id,
+            sku,
+        })
+    }
+
     return (
         <div>
             <div className="card">
 
                 <div>
                     {productDetail?.product_id && (
-                        <div className="grid grid-cols-12 gap-x-4">
+                        <div className="detail-page-wrapper">
 
                             <div className="col-span-5">
-                                <div>
-
+                                <div className="preview-image">
                                     <img className="w-full"
                                          src={productDetail?.image}
                                          alt=""/>
                                 </div>
-
                                 <div className="mt-4">
                                     <button className="py-4 mx-auto w-full">Order Now</button>
                                 </div>
-
                             </div>
 
                             <div className="col-span-7">
-                                <h3>{productDetail.title}</h3>
+                                <h3 className="font-semibold text-2xl">{productDetail.title}</h3>
+
+                                <h3 className="font-semibold text-2xl">${productDetail.price}</h3>
+
                                 <p>{productDetail.description.substring(0, 500)}</p>
 
-                                <div>
-                                    <p className="my-1 font-medium text-lg">Variants</p>
-                                    {productDetail.variants.map(variant => (
-                                        <div>
-                                            <p>{variant.sku}</p>
+                                <div className="mt-10">
+                                    {/*<p className="my-1 font-medium text-lg">Variants</p>*/}
 
-                                            <div>
-                                                {renderGroupAttribute(variant?.attributes)}
+                                    <div className="relative z-10">
+                                        {Object.keys(productDetail?.attributeGroup)?.map(attrId => (
+                                            <div className="mt-6" key={attrId}>
+
+                                                <h4 className="mb-1 mt-1 font-medium uppercase text-sm">{getAttribute(attrId).name}</h4>
+
+                                                {getAttribute(attrId).name === "color" && (
+                                                    <div className="flex gap-x-1.5 mt-4">
+                                                        {
+                                                            productDetail?.attributeGroup[attrId]?.map((av: { value: string, attribute_value_id: string }) => (
+                                                                <div  key={av.attribute_value_id} onClick={()=>handleChooseVariant(av)} className="w-6 h-6 rounded-full"
+                                                                     style={{background: av.value}}>
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                )}
+
+                                                {getAttribute(attrId).name === "size" && (
+                                                    <div className="flex gap-x-1.5 text-xs mt-4">
+                                                        {
+                                                            productDetail?.attributeGroup[attrId]?.map((av:  { value: string, attribute_value_id: string }) => (
+                                                                <div key={av.attribute_value_id} onClick={()=>handleChooseVariant(av)} className="w-10 h-10 bg-gray-800 flex justify-center items-center rounded-full">
+                                                                    {av.value}
+                                                                </div>
+                                                            ))
+                                                        }
+                                                    </div>
+                                                )}
 
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
+
+
+                                    {/*{productDetail.variants.map(variant => (*/}
+                                    {/*    <div>*/}
+                                    {/*        <p>{variant.sku}</p>*/}
+
+                                    {/*        <div>*/}
+                                    {/*            {renderGroupAttribute(variant?.attributes)}*/}
+
+                                    {/*        </div>*/}
+                                    {/*    </div>*/}
+                                    {/*))}*/}
                                 </div>
                             </div>
+
                         </div>
                     )}
                 </div>

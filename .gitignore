@@ -12,3 +12,6 @@ products/.env
 
 database/**
 frontend/node_modules
+
+
+node_modules

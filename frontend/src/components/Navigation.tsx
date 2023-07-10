@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {Link, NavLink} from "react-router-dom";
 import useAuthState from "../store/authState.ts";
 import {BsCart, BsHeart} from "react-icons/bs";
+import CartSidebar from "./CartSidebar.tsx";
 
 
 function openAuthDropdown() {
@@ -43,9 +44,13 @@ const Navigation = () => {
                                 <BsHeart/>
                             </div>
 
-                            <div className="rounded-full w-8 h-8 bg-gray-700 flex items-center justify-center">
+                            <div onClick={() => setOpen("card-sidebar")}
+                                 className="rounded-full w-8 h-8 bg-gray-700 flex items-center justify-center">
                                 <BsCart/>
                             </div>
+
+                           <CartSidebar isOpen={open === "card-sidebar"} onClose={() => setOpen("")}/>
+
                         </div>
 
                         <div>

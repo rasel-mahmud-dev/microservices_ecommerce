@@ -68,6 +68,7 @@ router.post("/login", async function (req, res, next) {
         let result = await client.query(`select * from users where email = $1`,
             [email]
         )
+        console.log(result)
         if (!result.rowCount) return next("You are not registered")
 
         let user = result.rows[0]
