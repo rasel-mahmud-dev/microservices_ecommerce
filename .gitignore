@@ -10,6 +10,9 @@ users/.env
 products/node_modules
 products/.env
 
+carts/node_modules
+carts/.env
+
 database/**
 frontend/node_modules
 

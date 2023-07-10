@@ -63,6 +63,18 @@ services:
     volumes:
       - ./products:/app
 
+  carts:
+    restart: always
+    build:
+      context: ./carts
+      dockerfile: Dockerfile
+    ports:
+      - "1004:1004"
+    networks:
+      - my-network
+    volumes:
+      - ./carts:/app
+
   mypostgress:
     image: postgres
     container_name: mypostgress
