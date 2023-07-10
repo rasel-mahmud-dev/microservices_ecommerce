@@ -29,6 +29,7 @@ app.use((err, req, res, next)=>{
     })
 })
 
+require("./grpc/server")
 
 const PORT = process.env.PORT || 1003
 app.listen(PORT, () => console.log("Products service is running port " + PORT))

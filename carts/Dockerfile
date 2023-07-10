@@ -15,6 +15,20 @@ RUN npm install
 
 COPY . .
 
+# Copy the protobuf files
+COPY protos/cart.proto ./protos/
 
-# Define the command to run your app using npm
-CMD ["npm", "start"]
+
+# Generate gRPC client and server code
+RUN npm install -g grpc-tools
+RUN grpc_tools_node_protoc \
+  --js_out=import_style=commonjs,binary:./cart \
+  --grpc_out=./cart \
+  --plugin=protoc-gen-grpc=`which grpc_tools_node_protoc_plugin` \
+  ./protos/cart.proto
+
+# Copy the service code
+COPY cart/ ./
+
+# Expose the  port
+EXPOSE 1004

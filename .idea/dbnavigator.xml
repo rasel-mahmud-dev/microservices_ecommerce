@@ -23,9 +23,7 @@
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="71c76230-291f-4448-870e-e042f9a171dd" object-ref="schemas/public/tables/cart" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatasetFilterManager">
     <filter-actions connection-id="71c76230-291f-4448-870e-e042f9a171dd" dataset="public.cart" active-filter-id="EMPTY_FILTER" />

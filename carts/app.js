@@ -16,6 +16,7 @@ app.use(cors({
     }
 }))
 
+require("./grpc/server")
 
 app.use("/carts-service", router)
 

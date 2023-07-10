@@ -27,29 +27,29 @@ services:
     volumes:
       - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
 
-  orders:
-    restart: always
-    build:
-      context: ./orders
-      dockerfile: Dockerfile
-    ports:
-      - "1001:1001"
-    networks:
-      - my-network
-    volumes:
-      - ./orders:/app
-
-  users:
-    restart: always
-    build:
-      context: ./users
-      dockerfile: Dockerfile
-    ports:
-      - "1000:1000"
-    networks:
-      - my-network
-    volumes:
-      - ./users:/app
+#  orders:
+#    restart: always
+#    build:
+#      context: ./orders
+#      dockerfile: Dockerfile
+#    ports:
+#      - "1001:1001"
+#    networks:
+#      - my-network
+#    volumes:
+#      - ./orders:/app
+#
+#  users:
+#    restart: always
+#    build:
+#      context: ./users
+#      dockerfile: Dockerfile
+#    ports:
+#      - "1000:1000"
+#    networks:
+#      - my-network
+#    volumes:
+#      - ./users:/app
 
   products:
     restart: always
@@ -62,6 +62,7 @@ services:
       - my-network
     volumes:
       - ./products:/app
+      - ./protos:/app/protos
 
   carts:
     restart: always
@@ -74,19 +75,20 @@ services:
       - my-network
     volumes:
       - ./carts:/app
+      - ./protos:/app/protos
 
-  mypostgress:
-    image: postgres
-    container_name: mypostgress
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=rasel
-      - POSTGRES_PASSWORD=12345
-    volumes:
-      - ./database:/var/lib/postgresql/data
-    networks:
-      - my-network
+#  mypostgress:
+#    image: postgres
+#    container_name: mypostgress
+#    ports:
+#      - 5432:5432
+#    environment:
+#      - POSTGRES_USER=rasel
+#      - POSTGRES_PASSWORD=12345
+#    volumes:
+#      - ./database:/var/lib/postgresql/data
+#    networks:
+#      - my-network
 
 
 networks:

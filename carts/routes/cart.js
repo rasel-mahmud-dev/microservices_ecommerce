@@ -1,6 +1,9 @@
 const connectDatabase = require("../database");
 const {func} = require("joi");
 const router = require("express").Router()
+const grpc = require('@grpc/grpc-js');
+// const productProto = require('./product_pb');
+// const productGrpc = require('./product_grpc_pb');
 
 
 // get all cart products
@@ -26,6 +29,11 @@ router.get("/", async function (req, res, next) {
 `,
             [userId]
         )
+
+        // Create a gRPC client
+        // const productService = new productGrpc.ProductServiceClient('product-service:50051', grpc.credentials.createInsecure());
+
+
 
         res.send(result.rows)
 
