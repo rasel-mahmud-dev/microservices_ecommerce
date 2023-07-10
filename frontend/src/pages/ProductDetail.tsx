@@ -4,13 +4,19 @@ import React, {useEffect, useState} from "react";
 import attributeGroupFn from "../utils/attributeGroupFn.ts";
 import useSWR from "swr";
 import {Attribute} from "../interface";
+import {BiCart} from "react-icons/bi";
+import useCustomToast from "../hooks/useCustomToast.tsx";
+import useCartState from "../store/cartState.ts";
 
 const ProductDetail = () => {
-
-
     const {productId} = useParams()
 
+
+    const {addToCart} = useCartState()
+
     const [productDetail, setProductDetail] = useState({})
+
+    const toast = useCustomToast()
 
 
     useEffect(() => {
@@ -27,10 +33,7 @@ const ProductDetail = () => {
         }
     }, [productId]);
 
-    const [selectVariant, setSelectVariant] = useState({
-
-    })
-
+    const [selectVariant, setSelectVariant] = useState(null)
 
 
     const attributeRes = useSWR('/api/attributes', () => {
@@ -74,7 +77,8 @@ const ProductDetail = () => {
                                                  style={{background: item.value}}>
                                             </div>
                                         ) : (
-                                            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-400">
+                                            <div
+                                                className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-400">
                                                 {item.value}
                                             </div>
                                         )}
@@ -92,16 +96,38 @@ const ProductDetail = () => {
 
     function handleChooseVariant(av) {
         const {
-                attribute_id,
-                attribute_value_id,
-                label,
-                sku,
-                variant_id
+            attribute_id,
+            attribute_value_id,
+            label,
+            sku,
+            variant_id
         } = av
+
         setSelectVariant({
+            product_id: productDetail?.product_id,
             variant_id: variant_id,
             sku,
+            product: {
+                image: productDetail?.image,
+                title: productDetail?.title,
+                price: productDetail?.price,
+            }
         })
+    }
+
+
+    function handleAddToCart() {
+        if (!productDetail) return toast("Please try again", true)
+
+        if (!selectVariant) return toast("Please select a variant", true)
+
+        addToCart({
+            product_id: selectVariant.product_id,
+            variant_id: selectVariant.variant_id,
+            sku: selectVariant.sku,
+            product: selectVariant.product,
+            quantity: 1,
+        }, true)
     }
 
     return (
@@ -110,75 +136,99 @@ const ProductDetail = () => {
 
                 <div>
                     {productDetail?.product_id && (
-                        <div className="detail-page-wrapper">
+                        <div>
+                            <div className="detail-page-wrapper">
 
-                            <div className="col-span-5">
-                                <div className="preview-image">
-                                    <img className="w-full"
-                                         src={productDetail?.image}
-                                         alt=""/>
+                                <div className="col-span-5">
+                                    <div className="preview-image">
+                                        <img className="w-full"
+                                             src={productDetail?.image}
+                                             alt=""/>
+                                    </div>
+
                                 </div>
-                                <div className="mt-4">
-                                    <button className="py-4 mx-auto w-full">Order Now</button>
-                                </div>
-                            </div>
 
-                            <div className="col-span-7">
-                                <h3 className="font-semibold text-2xl">{productDetail.title}</h3>
+                                <div className="col-span-7">
+                                    <h3 className="font-semibold text-2xl">{productDetail.title}</h3>
 
-                                <h3 className="font-semibold text-2xl">${productDetail.price}</h3>
+                                    <h3 className="font-semibold text-2xl">${productDetail.price}</h3>
 
-                                <p>{productDetail.description.substring(0, 500)}</p>
+                                    <p>{productDetail?.description.substring(0, 500)}</p>
 
-                                <div className="mt-10">
-                                    {/*<p className="my-1 font-medium text-lg">Variants</p>*/}
+                                    <div className="mt-10">
+                                        {/*<p className="my-1 font-medium text-lg">Variants</p>*/}
 
-                                    <div className="relative z-10">
-                                        {Object.keys(productDetail?.attributeGroup)?.map(attrId => (
-                                            <div className="mt-6" key={attrId}>
+                                        <div className="relative z-10">
+                                            {Object.keys(productDetail?.attributeGroup)?.map(attrId => (
+                                                <div className="mt-6" key={attrId}>
 
-                                                <h4 className="mb-1 mt-1 font-medium uppercase text-sm">{getAttribute(attrId).name}</h4>
+                                                    <h4 className="mb-1 mt-1 font-medium uppercase text-sm">{getAttribute(attrId).name}</h4>
 
-                                                {getAttribute(attrId).name === "color" && (
-                                                    <div className="flex gap-x-1.5 mt-4">
-                                                        {
-                                                            productDetail?.attributeGroup[attrId]?.map((av: { value: string, attribute_value_id: string }) => (
-                                                                <div  key={av.attribute_value_id} onClick={()=>handleChooseVariant(av)} className="w-6 h-6 rounded-full"
-                                                                     style={{background: av.value}}>
-                                                                </div>
-                                                            ))
-                                                        }
-                                                    </div>
-                                                )}
+                                                    {getAttribute(attrId).name === "color" && (
+                                                        <div className="flex gap-x-1.5 mt-4">
+                                                            {
+                                                                productDetail?.attributeGroup[attrId]?.map((av: {
+                                                                    value: string,
+                                                                    attribute_value_id: string
+                                                                }) => (
+                                                                    <div key={av.attribute_value_id}
+                                                                         onClick={() => handleChooseVariant(av)}
+                                                                         className="w-6 h-6 rounded-full"
+                                                                         style={{background: av.value}}>
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+                                                    )}
 
-                                                {getAttribute(attrId).name === "size" && (
-                                                    <div className="flex gap-x-1.5 text-xs mt-4">
-                                                        {
-                                                            productDetail?.attributeGroup[attrId]?.map((av:  { value: string, attribute_value_id: string }) => (
-                                                                <div key={av.attribute_value_id} onClick={()=>handleChooseVariant(av)} className="w-10 h-10 bg-gray-800 flex justify-center items-center rounded-full">
-                                                                    {av.value}
-                                                                </div>
-                                                            ))
-                                                        }
-                                                    </div>
-                                                )}
+                                                    {getAttribute(attrId).name === "size" && (
+                                                        <div className="flex gap-x-1.5 text-xs mt-4">
+                                                            {
+                                                                productDetail?.attributeGroup[attrId]?.map((av: {
+                                                                    value: string,
+                                                                    attribute_value_id: string
+                                                                }) => (
+                                                                    <div key={av.attribute_value_id}
+                                                                         onClick={() => handleChooseVariant(av)}
+                                                                         className="w-10 h-10 bg-gray-800 flex justify-center items-center rounded-full">
+                                                                        {av.value}
+                                                                    </div>
+                                                                ))
+                                                            }
+                                                        </div>
+                                                    )}
 
-                                            </div>
-                                        ))}
+                                                </div>
+                                            ))}
+                                        </div>
+
+
+                                        {/*{productDetail.variants.map(variant => (*/}
+                                        {/*    <div>*/}
+                                        {/*        <p>{variant.sku}</p>*/}
+
+                                        {/*        <div>*/}
+                                        {/*            {renderGroupAttribute(variant?.attributes)}*/}
+
+                                        {/*        </div>*/}
+                                        {/*    </div>*/}
+                                        {/*))}*/}
+                                    </div>
+
+                                    <div className="mt-10">
+                                        <button onClick={handleAddToCart}
+                                                className="py-3 px-10 flex items-center gap-x-2">
+                                            <BiCart className="text-xl"/>
+                                            <span>Add To Cart</span>
+                                        </button>
                                     </div>
 
 
-                                    {/*{productDetail.variants.map(variant => (*/}
-                                    {/*    <div>*/}
-                                    {/*        <p>{variant.sku}</p>*/}
-
-                                    {/*        <div>*/}
-                                    {/*            {renderGroupAttribute(variant?.attributes)}*/}
-
-                                    {/*        </div>*/}
-                                    {/*    </div>*/}
-                                    {/*))}*/}
                                 </div>
+                            </div>
+
+                            <div className="container">
+                                asdklfjasdlkf
                             </div>
 
                         </div>

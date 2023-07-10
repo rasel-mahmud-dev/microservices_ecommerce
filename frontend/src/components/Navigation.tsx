@@ -3,6 +3,7 @@ import {Link, NavLink} from "react-router-dom";
 import useAuthState from "../store/authState.ts";
 import {BsCart, BsHeart} from "react-icons/bs";
 import CartSidebar from "./CartSidebar.tsx";
+import useCartState from "../store/cartState.ts";
 
 
 function openAuthDropdown() {
@@ -25,6 +26,7 @@ function openAuthDropdown() {
 const Navigation = () => {
 
     const authState = useAuthState()
+    const {carts, isOpenCart, toggleOpenCart} = useCartState()
 
     const [open, setOpen] = useState("")
 
@@ -44,12 +46,16 @@ const Navigation = () => {
                                 <BsHeart/>
                             </div>
 
-                            <div onClick={() => setOpen("card-sidebar")}
+                            <div className="relative" onClick={() => toggleOpenCart(true)}>
+
+                            <div
                                  className="rounded-full w-8 h-8 bg-gray-700 flex items-center justify-center">
                                 <BsCart/>
                             </div>
+                                <span className="absolute -top-2 -right-2 text-[10px] rounded-full w-5 h-5 bg-primary flex items-center justify-center ">{carts.length}</span>
+                            </div>
 
-                           <CartSidebar isOpen={open === "card-sidebar"} onClose={() => setOpen("")}/>
+                           <CartSidebar carts={carts} isOpen={isOpenCart} onClose={() => toggleOpenCart(false)}/>
 
                         </div>
 

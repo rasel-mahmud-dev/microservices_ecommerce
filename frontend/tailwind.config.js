@@ -6,10 +6,16 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+
+      colors: {
+        primary: "#f77216"
+      }
+    },
   },
   plugins: [],
   corePlugins: {
-    preflight: false,
+
+
   }
 }
