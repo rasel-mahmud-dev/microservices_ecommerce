@@ -28,14 +28,16 @@ const HomePage = () => {
 
     function attributeGroupFn(variants) {
         if (variants) {
-            let groupAttr = [] // [{ name: "color", values: [] }, { name: "size", values: [] } ]
+
+            let groupAttr = {} // [{ name: "color", values: [] }, { name: "size", values: [] } ]
+
             variants.forEach(varr => {
+
                 if (varr?.attributes) {
-                    let g = []
+
                     varr.attributes.forEach(attr => {
 
-                        let existIndex = g.findIndex(gp => gp.attribute_id === attr.attribute_id)
-
+                        // let existIndex = g.findIndex(gp => gp.attribute_id === attr.attribute_id)
                         let variantValue = {
                             sku: varr.sku,
                             variant_id: varr.variant_id,
@@ -45,51 +47,21 @@ const HomePage = () => {
                             attribute_value_id: attr.attribute_value_id
                         }
 
-                        if(existIndex !== -1){
+                        if (groupAttr[attr.attribute_id]) {
 
-                        }else {
-                            g.push(variantValue)
+                            groupAttr[attr.attribute_id].push(variantValue)
+
+                        } else {
+                            groupAttr[attr.attribute_id] = [variantValue]
                         }
-
-                        console.log(existIndex)
-
-                        // if(g[varr.variant_id]){
-                        //     g[varr.variant_id].push(variantValue)
-                        // } else {
-                        //     g[varr.variant_id] = [variantValue]
-                        // }
-
-
-
-
-                        // let existIndex = groupAttr.findIndex(gp => gp.attribute_id === attr.attribute_id)
-                        // console.log(existIndex)
-                        // if (existIndex !== -1) {
-                            // groupAttr[existIndex].values.push({
-                            //     value: attr.value,
-                            //     label: attr.label,
-                            //     attribute_value_id: attr.attribute_value_id,
-                            //     sku: varr.sku,
-                            //     variant_id: varr.variant_id,
-                            // })
-                        // } else {
-                            // groupAttr = [{
-                            //     attribute_id: attr.attribute_id,
-                            //     name: attr.name,
-                            //     values: []
-                            // }]
-
-                        // }
-
                     })
-
-                    console.log(g)
 
                 }
             })
+
             return groupAttr
         }
-        return []
+        return {}
     }
 
     useEffect(() => {
@@ -97,8 +69,7 @@ const HomePage = () => {
             let arr = [...data]
             arr = arr.map((product) => {
                 let attributeGroup = attributeGroupFn(product?.variants)
-                console.log(attributeGroup)
-                product.attributeGroup = attributeGroup || []
+                product.attributeGroup = attributeGroup
                 return product
             })
             setProducts(arr)
@@ -109,6 +80,16 @@ const HomePage = () => {
     const attributeRes = useSWR('/api/attributes', () => {
         return apis.get<Attribute[]>("/products-service/api/attributes").then(res => res.data)
     });
+
+    function getAttribute(attributeId?: string) {
+        console.log(attributeRes?.data)
+        if (attributeRes && attributeRes?.data) {
+            let a = attributeRes.data.find(attr => String(attr.attribute_id) === attributeId)
+            console.log(a)
+            return a
+        }
+        return {}
+    }
 
 
     const attributeValuesRes = useSWR('/api/attribute-values', () => {
@@ -210,38 +191,43 @@ const HomePage = () => {
                                 <h4 className="text-orange-500 my-1 p-0">${prod.price}</h4>
 
                                 <div className="relative z-10">
-                                    {prod?.attributeGroup?.map(attr => (
-                                        <div className="my-0">
-                                            <h2 className="uppercase text-xs m-0 px-0 py-2 font-semibold">{attr.name}</h2>
-                                            <div>
-                                                {attr.name === "color" && (
-                                                    <div className="flex gap-x-1.5">
-                                                        {
-                                                            attr.values.map((av: {value: string}) => (
-                                                                <div className="w-4 h-4 rounded-full"
-                                                                     style={{background: av.value}}>
-                                                                </div>
-                                                            ))
-                                                        }
-                                                    </div>
-                                                )}
+                                    {Object.keys(prod?.attributeGroup)?.map(attrId => (
+                                        <div className="mb-2">
 
-                                                {attr.name === "size" && (
-                                                    attr.values.map(av => (
-                                                        <div className="w-4 h-4 rounded-full">
-                                                            {av.value}
-                                                        </div>
-                                                    ))
-                                                )}
+                                            <h4 className="mb-1 mt-1 font-medium uppercase text-sm">{getAttribute(attrId).name}</h4>
 
-                                            </div>
+                                            {getAttribute(attrId).name === "color" && (
+                                                <div className="flex gap-x-1.5">
+                                                    {
+                                                        prod?.attributeGroup[attrId]?.map((av: { value: string }) => (
+                                                            <div className="w-4 h-4 rounded-full"
+                                                                 style={{background: av.value}}>
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                            )}
+
+                                            {getAttribute(attrId).name === "size" && (
+                                                <div className="flex gap-x-1.5 text-xs">
+                                                    {
+                                                        prod?.attributeGroup[attrId]?.map(av => (
+                                                            <div className="w-6 h-6 bg-gray-800 flex justify-center items-center rounded-full">
+                                                                {av.value}
+                                                            </div>
+                                                        ))
+                                                    }
+                                                </div>
+                                            )}
+
                                         </div>
                                     ))}
                                 </div>
                             </div>
 
 
-                            <Link className="absolute top-0 bottom-0 left-0 right-0" to={`/p/${prod.product_id}`}></Link>
+                            <Link className="absolute top-0 bottom-0 left-0 right-0"
+                                  to={`/p/${prod.product_id}`}></Link>
 
                         </div>
                     ))}
