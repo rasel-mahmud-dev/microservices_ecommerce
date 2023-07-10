@@ -121,13 +121,32 @@ const ProductDetail = () => {
 
         if (!selectVariant) return toast("Please select a variant", true)
 
-        addToCart({
+        let payload = {
             product_id: selectVariant.product_id,
             variant_id: selectVariant.variant_id,
             sku: selectVariant.sku,
             product: selectVariant.product,
             quantity: 1,
-        }, true)
+        }
+
+        apis.post("/carts-service/api/carts", {
+            product_id: productDetail.product_id,
+            sku: payload.sku,
+            variant_id: payload.variant_id,
+            quantity: payload.quantity
+
+        }).then(({status, data}) => {
+            console.log(status, data)
+        })
+
+
+        // addToCart({
+        //     product_id: selectVariant.product_id,
+        //     variant_id: selectVariant.variant_id,
+        //     sku: selectVariant.sku,
+        //     product: selectVariant.product,
+        //     quantity: 1,
+        // }, true)
     }
 
     return (

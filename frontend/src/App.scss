@@ -50,43 +50,43 @@ table {
 }
 
 input, textarea, select {
-  background: transparent;
-  border: 1px solid #f77216;
-  padding: 10px 8px;
+  background: transparent !important;
+  border: 1px solid #f77216 ;
+  padding: 6px 8px !important;
   width: 100%;
   outline: none;
-  margin-bottom: 10px;
+  margin-bottom: 10px !important;
   font-family: 'Montserrat', sans-serif;
   font-weight: 400;
   box-sizing: border-box;
 }
 
 input[type=color]{
-  padding: 0;
-  outline: none;
-  height: 38px;
+  padding: 0 !important;
+  outline: none !important;
+  height: 38px !important;
 
 }
 
 input[type=checkbox]{
   padding: 0;
   outline: none;
-  width: max-content;
-  margin: 0;
-  position: relative;
-  appearance: none;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0px !important;
+  position: relative !important;
+  appearance: none!important;
+  border: none !important;
   &:before{
     content: "";
     border: 1px solid #f77216;
     background: transparent;
     position: absolute;
-    left: 0;
+    left: 50%;
     width: 12px;
     height: 12px;
     transform: translate(-50%, -50%);
-    right: 0;
-    top: 0;
-    bottom: 0;
+    top: 50%;
   }
   &:checked{
     &:before{
@@ -95,15 +95,13 @@ input[type=checkbox]{
       background: #f77216;
     }
   }
-
-
 }
 
 button {
   display: block;
   background: #f77216 !important;
   border: 1px solid #f77216 !important;
-  padding: 10px 16px !important;
+  padding: 6px 10px !important;
 }
 
 select {

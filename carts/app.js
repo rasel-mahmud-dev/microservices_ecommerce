@@ -17,7 +17,7 @@ app.use(cors({
 }))
 
 
-app.use("carts-service", router)
+app.use("/carts-service", router)
 
 app.use((err, req, res, next)=>{
     res.status(500).send({

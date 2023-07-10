@@ -12,7 +12,7 @@ function connectDatabase() {
                 const newClient = new Client({
                     password: "12345",
                     user: "rasel",
-                    database: "product_services",
+                    database: "cart_services",
                     // host: "postgres",
                     host: "172.17.0.1",
                     port: 5432

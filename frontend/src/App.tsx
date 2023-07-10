@@ -20,6 +20,8 @@ const RegistrationPage  = lazy(()=>import( "./pages/RegistrationPage.tsx"));
 
 import HomeLayout   from "./pages/HomeLayout.tsx"
 import Dashboard   from "./pages/admin/Dashboard.tsx"
+import useSWR from "swr";
+import {Attribute} from "./interface";
 
 
 function App() {
@@ -34,6 +36,12 @@ function App() {
             }
         })
     }, [])
+
+    const cartsRes = useSWR('/api/carts', () => {
+        return apis.get("/carts-service/api/carts").then(res => res?.data)
+    });
+
+    console.log(cartsRes?.data)
 
 
     return (
