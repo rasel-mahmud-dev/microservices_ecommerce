@@ -40,7 +40,7 @@ router.get("/", async function (req, res, next) {
         // Make the gRPC call to list the products
         productGRPCClient.ListProducts({productIds}, (error, response) => {
             if (error) {
-                next("Cart items fetch fail")
+                next("GRPC connection fail")
                 return;
             }
             const products = response.products;
@@ -52,7 +52,6 @@ router.get("/", async function (req, res, next) {
             })
 
             res.status(200).send( carts)
-
         });
 
     } catch (ex) {
