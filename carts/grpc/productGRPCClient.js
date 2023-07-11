@@ -1,6 +1,8 @@
 const grpc = require('@grpc/grpc-js');
+
 const protoLoader = require('@grpc/proto-loader');
-const PROTO_FILE ='protos/product.proto';
+
+const PROTO_FILE = 'protos/product.proto';
 
 const packageDefinition = protoLoader.loadSync(PROTO_FILE, {
     keepCase: true,
@@ -10,10 +12,12 @@ const packageDefinition = protoLoader.loadSync(PROTO_FILE, {
     oneofs: true
 });
 
-const productProto = grpc.loadPackageDefinition(packageDefinition).product;
 
+const productProto = grpc.loadPackageDefinition(packageDefinition).product;
+const containerIP = "172.20.0.4"
 
 // Create the gRPC client
-const productGRPCClient = new productProto.ProductService('172.20.0.5:50053', grpc.credentials.createInsecure());
+const productGRPCClient = new productProto.ProductService(containerIP + ':50053', grpc.credentials.createInsecure());
+
 
 module.exports = productGRPCClient

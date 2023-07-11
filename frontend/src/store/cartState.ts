@@ -28,7 +28,7 @@ export interface CartState {
 
 const useCartState = create<CartState>(set => ({
     isOpenCart: false,
-    carts:  [],
+    carts: [],
     fetchCarts: (payload) => set({
         carts: payload
     }),
@@ -49,8 +49,11 @@ const useCartState = create<CartState>(set => ({
                     carts: [...state.carts, payload],
                     isOpenCart: isOpenCart
                 }
+
             } else {
-                state.carts[updateIndex].quantity++
+
+                state.carts[updateIndex] = payload
+
                 return {
                     carts: state.carts,
                     isOpenCart: isOpenCart
