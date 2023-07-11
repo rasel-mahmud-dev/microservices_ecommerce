@@ -136,17 +136,13 @@ const ProductDetail = () => {
             quantity: payload.quantity
 
         }).then(({status, data}) => {
-            console.log(status, data)
+            if(status === 200){
+                addToCart({
+                    ...data,
+                    product: selectVariant.product,
+                }, true)
+            }
         })
-
-
-        // addToCart({
-        //     product_id: selectVariant.product_id,
-        //     variant_id: selectVariant.variant_id,
-        //     sku: selectVariant.sku,
-        //     product: selectVariant.product,
-        //     quantity: 1,
-        // }, true)
     }
 
     return (

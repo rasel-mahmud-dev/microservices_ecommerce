@@ -1,21 +1,14 @@
 
-CREATE TABLE if not exists cart (
-    cart_id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
+create table if not exists cart (
+    cart_id serial primary key,
+    user_id int not null,
+    sku varchar not null,
+    variant_id int not null,
+    product_id int not null,
+    quantity int not null default 1,
+    created_at timestamp default now(),
 
+    constraint uc_cart_item unique (user_id, product_id, sku, variant_id)
 
---drop table cart_item;
-
-CREATE TABLE if not exists cart_item (
-    cart_item_id SERIAL PRIMARY KEY,
-    cart_id INT NOT NULL,
-    sku VARCHAR NOT NULL,
-    variant_id INT NOT NULL,
-    product_id INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-        CONSTRAINT uc_cart_item UNIQUE (cart_id, product_id, sku, variant_id),
-        FOREIGN KEY (cart_id) REFERENCES cart (cart_id)
---    FOREIGN KEY (product_id) REFERENCES product (product_id) disable for separate database
+    -- FOREIGN KEY (product_id) REFERENCES product (product_id) disable for separate database
 );
