@@ -14,18 +14,6 @@ services:
     volumes:
       - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
 
-#  orders:
-#    restart: always
-#    build:
-#      context: ./orders
-#      dockerfile: Dockerfile
-#    ports:
-#      - "1001:1001"
-#    networks:
-#      - my-network
-#    volumes:
-#      - ./orders:/app
-
   users:
     restart: always
     build:
@@ -67,6 +55,20 @@ services:
       - ./carts:/app
       - ./protos:/app/protos
       - ./.global_env:/app/.global_env
+
+
+  orders:
+    restart: always
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
+    ports:
+      - "1005:1005"
+    networks:
+      - my-network
+    volumes:
+      - ./orders:/app
+      - ./protos:/app/protos
 
 
   mypostgress:

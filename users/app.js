@@ -2,6 +2,8 @@ const express = require("express")
 const cors = require("cors")
 const router = require("./routes");
 
+require("dotenv").config({})
+
 const {readFileSync} = require("fs");
 const connectDatabase = require("./database");
 

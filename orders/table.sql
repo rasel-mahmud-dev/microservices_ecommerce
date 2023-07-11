@@ -1,7 +1,9 @@
+
+--DROP TABLE IF EXISTS orders;
 CREATE TABLE IF NOT EXISTS orders (
   order_id SERIAL PRIMARY KEY,
   user_id INT NOT NULL,
-  product_ids JSONB NOT NULL,
+  product_ids JSON NOT NULL,
   quantity INT NOT NULL DEFAULT 1,
   total_price DECIMAL(10,2) NOT NULL,
   order_date TIMESTAMP NOT NULL,

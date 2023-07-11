@@ -74,7 +74,7 @@ router.post("/login", async function (req, res, next) {
         let user = result.rows[0]
         if (user.password !== password) return next("Your password wrong")
 
-        const token = jwt.sign({user_id: user.user_id}, process.env.SECRET, {expiresIn: "1min"})
+        const token = jwt.sign({user_id: user.user_id}, process.env.SECRET, {expiresIn: process.env.TOKEN_EXPIRES_IN || "7days"})
 
         delete user["password"]
 

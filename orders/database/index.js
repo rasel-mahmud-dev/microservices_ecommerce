@@ -14,7 +14,8 @@ function connectDatabase() {
                     user: "rasel",
                     database: "order_services",
                     // host: "postgres",
-                    host: "127.0.0.1",
+                    host: "172.17.0.1",
+                    // host: "127.0.0.1",
                     port: 5432
                 })
 
