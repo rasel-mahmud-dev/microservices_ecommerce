@@ -61,7 +61,6 @@ router.get("/", async function (req, res, next) {
             }
         })
 
-
         // Make the gRPC call to list the products
         gClient.ListProducts({productIds}, (error, response) => {
             if (error) {
@@ -70,13 +69,13 @@ router.get("/", async function (req, res, next) {
             }
             const products = response.products;
 
-            cart.cart_items = cart.cart_items.map(item => {
+            let cart_items = cart.cart_items.map(item => {
                 let prod = products.find(p => p.product_id == item.product_id) || null
                 item.product = prod
                 return item
             })
 
-            res.status(200).send( cart)
+            res.status(200).send( cart_items)
 
         });
 

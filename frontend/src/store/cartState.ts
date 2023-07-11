@@ -15,10 +15,8 @@ export type CartItem = {
     variant_id: string
     quantity: number
 }
-export type Cart = {
-    cart_id?: string,
-    cart_items: CartItem[]
-}
+
+export type Cart = CartItem[]
 
 export interface CartState {
     isOpenCart: boolean,
@@ -30,10 +28,7 @@ export interface CartState {
 
 const useCartState = create<CartState>(set => ({
     isOpenCart: false,
-    carts: {
-        cart_id: undefined,
-        cart_items: []
-    },
+    carts:  [],
     fetchCarts: (payload) => set({
         carts: payload
     }),

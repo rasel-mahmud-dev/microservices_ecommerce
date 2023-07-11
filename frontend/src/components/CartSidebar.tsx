@@ -26,7 +26,7 @@ const CartSidebar: FC<CartSidebarProps> = ({onClose, isOpen, carts}) => {
 
 
                     <div className="py-4">
-                        {carts.cart_items.map(cart=>(
+                        {carts.map(cart=>(
                             <div className="border-b border-gray-100/20 pt-4 pb-5 last:border-0">
 
                                 <div className="flex items-start gap-x-2">
