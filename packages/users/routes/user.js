@@ -2,6 +2,7 @@ const connectDatabase = require("../database");
 const router = require("express").Router()
 
 const jwt = require("jsonwebtoken")
+const {createToken, parseToken} = require("@micro-service/utilities/lib/jwt");
 
 
 // get all users
@@ -74,7 +75,7 @@ router.post("/login", async function (req, res, next) {
         let user = result.rows[0]
         if (user.password !== password) return next("Your password wrong")
 
-        const token = jwt.sign({user_id: user.user_id}, process.env.SECRET, {expiresIn: process.env.TOKEN_EXPIRES_IN || "7days"})
+        const token = createToken(user.user_id)
 
         delete user["password"]
 
@@ -94,8 +95,7 @@ router.get("/validate", async function (req, res, next) {
     try {
         let client = await connectDatabase()
 
-        const token = req.headers["token"]
-        let data = jwt.decode(token, {secretKey: process.env.SECRET})
+        const data = parseToken(req)
 
         if (!data) return next("Token expired, Please login first")
 

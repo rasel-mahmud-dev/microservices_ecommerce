@@ -1,9 +1,12 @@
 const express = require("express")
 const {readFileSync} = require("fs");
-const connectDatabase = require("./database");
+
 const cors = require("cors")
 
 const router = require("./routes")
+
+const connectDatabase = require("@micro-service/utilities/lib/connectDatabase");
+
 
 
 const app = express()
