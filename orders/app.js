@@ -1,15 +1,39 @@
 const express = require("express")
+const {readFileSync} = require("fs");
+const connectDatabase = require("./database");
+const cors = require("cors")
+
+const router = require("./routes")
+
 
 const app = express()
 
-app.get("/api/orders", (req, res, next) => {
-    res.send("order list asd asd asd  asd asd asd")
+
+
+app.use(express.json())
+app.use(cors({
+    origin: function (origin, callback) {
+        callback(null, true)
+    }
+}))
+
+
+app.use("/orders-service", router)
+
+
+app.use((err, req, res, next)=>{
+    res.status(500).send({
+        message: typeof err === "string" ? err : err?.message
+    })
 })
 
-app.get("/api/orders/create", (req, res, next) => {
-    res.send("create an order as")
+const PORT = process.env.PORT || 1005
+app.listen(PORT, () => console.log("Order service is running on port " + PORT))
+
+connectDatabase().then(client=>{
+    console.log("database connected")
+    let t = readFileSync("./table.sql")
+    let result = client.query(t.toString())
+}).catch(ex=>{
+    console.log(ex.message)
 })
-
-
-app.listen(1001, () => console.log("Orders service is running port 1001"))
-
