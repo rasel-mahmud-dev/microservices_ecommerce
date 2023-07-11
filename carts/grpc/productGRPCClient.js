@@ -12,12 +12,13 @@ const packageDefinition = protoLoader.loadSync(PROTO_FILE, {
     oneofs: true
 });
 
-
 const productProto = grpc.loadPackageDefinition(packageDefinition).product;
-const containerIP = "172.20.0.2"
+
+const host = "172.20.0.5"
+// const host = process.env.CONTAINER_IP
 
 // Create the gRPC client
-const productGRPCClient = new productProto.ProductService(containerIP + ':50053', grpc.credentials.createInsecure());
+const productGRPCClient = new productProto.ProductService(host + ':50053', grpc.credentials.createInsecure());
 
 
 module.exports = productGRPCClient

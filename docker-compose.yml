@@ -2,19 +2,6 @@ version: '3'
 
 services:
 
-#    api-gateway:
-#      restart: always
-#      build:
-#        context: ./api-gateway
-#        dockerfile: Dockerfile
-#      ports:
-#        - "80:80"
-#      networks:
-#        - my-network
-#      volumes:
-#        - ./api-gateway:/app
-
-
   api-gateway:
     build:
       dockerfile: Dockerfile
@@ -50,6 +37,8 @@ services:
       - my-network
     volumes:
       - ./users:/app
+      - ./protos:/app/protos
+      - ./.global_env:/app/.global_env
 
   products:
     restart: always
@@ -63,6 +52,7 @@ services:
     volumes:
       - ./products:/app
       - ./protos:/app/protos
+      - ./.global_env:/app/.global_env
 
   carts:
     restart: always
@@ -76,6 +66,7 @@ services:
     volumes:
       - ./carts:/app
       - ./protos:/app/protos
+      - ./.global_env:/app/.global_env
 
 
   mypostgress:

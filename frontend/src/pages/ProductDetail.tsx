@@ -136,7 +136,7 @@ const ProductDetail = () => {
             quantity: payload.quantity
 
         }).then(({status, data}) => {
-            if(status === 200){
+            if (status === 200) {
                 addToCart({
                     ...data,
                     product: selectVariant.product,

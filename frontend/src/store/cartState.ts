@@ -9,6 +9,7 @@ export type CartProduct = {
 
 
 export type CartItem = {
+    cart_id?: string,
     product: CartProduct,
     product_id: string,
     sku: string,
@@ -21,17 +22,22 @@ export type Cart = CartItem[]
 export interface CartState {
     isOpenCart: boolean,
     carts: Cart
-    fetchCarts: (payload: Cart ) => void
+    selectedCartItem: string[]
+    fetchCarts: (payload: Cart) => void
     addToCart: (payload: CartItem, isOpenCart: boolean) => void
-    toggleOpenCart: (isOpenCart: boolean) => void
+    toggleOpenCart: (isOpenCart: boolean) => void,
+    toggleSelectCartItem: (cartId: string) => void,
+
 }
 
 const useCartState = create<CartState>(set => ({
     isOpenCart: false,
     carts: [],
+    selectedCartItem: [],
     fetchCarts: (payload) => set({
         carts: payload
     }),
+
     addToCart: (payload, isOpenCart = false) => set(function (state) {
 
         if (payload) {
@@ -63,7 +69,18 @@ const useCartState = create<CartState>(set => ({
     }),
     toggleOpenCart: (isOpen = true) => set({
         isOpenCart: isOpen
+    }),
+
+    toggleSelectCartItem: (cartId: string) => set((state) => {
+        let updateState = {...state}
+        if (updateState.selectedCartItem.includes(cartId)) {
+            updateState.selectedCartItem = updateState.selectedCartItem.filter(p => p !== cartId)
+        } else {
+            updateState.selectedCartItem = [...updateState.selectedCartItem, cartId]
+        }
+        return updateState
     })
+
 }))
 
 export default useCartState
