@@ -2,9 +2,28 @@ const connectDatabase = require("../database");
 const {func} = require("joi");
 const router = require("express").Router()
 const grpc = require('@grpc/grpc-js');
-// const productProto = require('./product_pb');
-// const productGrpc = require('./product_grpc_pb');
 
+const protoLoader = require('@grpc/proto-loader');
+const {readFile} = require("fs");
+const {join} = require("path");
+
+const PROTO_FILE = 'protos/product.proto';
+
+const packageDefinition = protoLoader.loadSync(PROTO_FILE, {
+    keepCase: true,
+    longs: String,
+    enums: String,
+    defaults: true,
+    oneofs: true
+});
+
+
+const productProto = grpc.loadPackageDefinition(packageDefinition).product;
+
+
+// readFile("protos/product.proto", (err, data)=>{
+//     console.log("result", data.toString())
+// })
 
 // get all cart products
 router.get("/", async function (req, res, next) {
@@ -30,9 +49,27 @@ router.get("/", async function (req, res, next) {
             [userId]
         )
 
-        // Create a gRPC client
-        // const productService = new productGrpc.ProductServiceClient('product-service:50051', grpc.credentials.createInsecure());
+        // Create the gRPC client
+        const gClient = new productProto.ProductService('172.20.0.5:50053', grpc.credentials.createInsecure());
 
+        // Define the request message
+        const request = {
+            page_size: 10,
+            page_number: 1
+        };
+
+
+        // Make the gRPC call to list the products
+        gClient.ListProducts(request, (error, response) => {
+            if (error) {
+                console.error('Error:', error.message);
+                return;
+            }
+
+            const products = response.products;
+            console.log('List of Products: s', products);
+
+        });
 
 
         res.send(result.rows)

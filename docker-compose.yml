@@ -2,17 +2,17 @@ version: '3'
 
 services:
 
-  #  api-gateway:
-  #    restart: always
-  #    build:
-  #      context: ./api-gateway
-  #      dockerfile: Dockerfile
-  #    ports:
-  #      - "80:80"
-  #    networks:
-  #      - my-network
-  #    volumes:
-  #      - ./api-gateway:/app
+#    api-gateway:
+#      restart: always
+#      build:
+#        context: ./api-gateway
+#        dockerfile: Dockerfile
+#      ports:
+#        - "80:80"
+#      networks:
+#        - my-network
+#      volumes:
+#        - ./api-gateway:/app
 
 
   api-gateway:
@@ -38,18 +38,18 @@ services:
 #      - my-network
 #    volumes:
 #      - ./orders:/app
-#
-#  users:
-#    restart: always
-#    build:
-#      context: ./users
-#      dockerfile: Dockerfile
-#    ports:
-#      - "1000:1000"
-#    networks:
-#      - my-network
-#    volumes:
-#      - ./users:/app
+
+  users:
+    restart: always
+    build:
+      context: ./users
+      dockerfile: Dockerfile
+    ports:
+      - "1000:1000"
+    networks:
+      - my-network
+    volumes:
+      - ./users:/app
 
   products:
     restart: always
@@ -77,19 +77,23 @@ services:
       - ./carts:/app
       - ./protos:/app/protos
 
-#  mypostgress:
-#    image: postgres
-#    container_name: mypostgress
-#    ports:
-#      - 5432:5432
-#    environment:
-#      - POSTGRES_USER=rasel
-#      - POSTGRES_PASSWORD=12345
-#    volumes:
-#      - ./database:/var/lib/postgresql/data
-#    networks:
-#      - my-network
+
+  mypostgress:
+    image: postgres
+    container_name: mypostgress
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=rasel
+      - POSTGRES_PASSWORD=12345
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    networks:
+      - my-network
 
 
 networks:
   my-network:
+
+
+

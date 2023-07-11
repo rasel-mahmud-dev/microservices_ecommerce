@@ -68,12 +68,38 @@ const server = new grpc.Server();
 // Add the cart service to the server
 server.addService(productProto.ProductService.service, productService);
 
+
 // Start the gRPC server
 server.bindAsync('0.0.0.0:50053', grpc.ServerCredentials.createInsecure(), (err, port) => {
     if (err) {
         console.error('Failed to bind gRPC server:', err);
         return;
     }
-    console.log('gRPC server running at http://0.0.0.0:' + port);
+    console.log('gRPC product server running at http://0.0.0.0:' + port);
     server.start();
 });
+
+
+// const grpcClient = new productProto.ProductService('http://0.0.0.0:50053', grpc.credentials.createInsecure());
+
+//
+// // Create the gRPC client
+// const client = new productProto.ProductService('0.0.0.0:50053', grpc.credentials.createInsecure());
+//
+// // Define the request message
+// const request = {
+//     page_size: 10,
+//     page_number: 1
+// };
+//
+// // Make the gRPC call to list the products
+// client.ListProducts(request, (error, response) => {
+//     if (error) {
+//         console.error('Error:', error.message);
+//         return;
+//     }
+//
+//     const products = response.products;
+//     console.log('List of Products:', products);
+//
+// });

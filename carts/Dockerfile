@@ -16,8 +16,11 @@ RUN npm install
 COPY . .
 
 # Copy the protobuf files
-COPY protos/cart.proto ./protos/
+# Copy the shared proto files
+#COPY protos /app/protos
 
+# Copy the shared proto files from the Docker volume
+#COPY --from=proto-volume:/proto-files /app/protos /app/protos
 
 # Generate gRPC client and server code
 RUN npm install -g grpc-tools
@@ -28,7 +31,9 @@ RUN grpc_tools_node_protoc \
   ./protos/cart.proto
 
 # Copy the service code
-COPY cart/ ./
+#COPY cart/ ./
 
 # Expose the  port
 EXPOSE 1004
+
+

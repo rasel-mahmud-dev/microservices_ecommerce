@@ -16,7 +16,7 @@ RUN npm install
 COPY . .
 
 # Copy the protobuf files
-COPY protos/product.proto ./protos/
+#COPY protos/product.proto ./protos/
 
 
 # Generate gRPC client and server code
@@ -28,7 +28,7 @@ RUN grpc_tools_node_protoc \
   ./protos/product.proto
 
 # Copy the service code
-COPY product/ ./
+#COPY product/ ./
 
 # Define the command to run your app using npm
 CMD ["npm", "start"]
