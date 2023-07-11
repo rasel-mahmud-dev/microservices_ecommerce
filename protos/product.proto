@@ -3,14 +3,15 @@ syntax = "proto3";
 package product;
 
 message Product {
-  string id = 1;
-  string name = 2;
+  string product_id = 1;
+  string title = 2;
   string description = 3;
-  float price = 4;
+  double price = 4;
+  string image = 5;
 }
 
 message GetProductRequest {
-  string id = 1;
+  string product_id = 1;
 }
 
 message GetProductResponse {
@@ -18,8 +19,7 @@ message GetProductResponse {
 }
 
 message ListProductsRequest {
-  int32 page_size = 1;
-  int32 page_number = 2;
+  repeated string productIds = 1;
 }
 
 message ListProductsResponse {

@@ -1,5 +1,6 @@
 const grpc = require('@grpc/grpc-js');
 const protoLoader = require('@grpc/proto-loader');
+const connectDatabase = require("../database");
 
 const packageDefinition = protoLoader.loadSync('protos/product.proto', {
     keepCase: true,
@@ -32,33 +33,31 @@ const productService = {
         };
 
         callback(null, response);
+
     },
-    ListProducts: function (call, callback) {
+    ListProducts: async function (call, callback) {
         const request = call.request;
-        // Implement the logic to list products based on the request
-        // Example: retrieve a list of products from the database or perform other operations
-        // ...
 
-        const products = [
-            {
-                id: '1',
-                name: 'Product 1',
-                description: 'This is product 1',
-                price: 19.99
-            },
-            {
-                id: '2',
-                name: 'Product 2',
-                description: 'This is product 2',
-                price: 29.99
-            }
-        ];
+        /** get product by given ids */
 
-        const response = {
-            products: products
-        };
 
-        callback(null, response);
+        try{
+            const client = await connectDatabase()
+            const placeholders = request.productIds.map((_, index)=> `$${index + 1}`).join(", ")
+            const sql = `select title, description, price, image, product_id from products where product_id IN (${placeholders})`
+            let result = await client.query(sql, request.productIds)
+
+            const response = {
+                products: result.rows
+            };
+
+            callback(null, response);
+
+        } catch (ex){
+            callback(ex, null);
+        }
+
+
     }
 };
 

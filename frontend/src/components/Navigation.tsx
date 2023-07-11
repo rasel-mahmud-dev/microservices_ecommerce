@@ -52,7 +52,7 @@ const Navigation = () => {
                                  className="rounded-full w-8 h-8 bg-gray-700 flex items-center justify-center">
                                 <BsCart/>
                             </div>
-                                <span className="absolute -top-2 -right-2 text-[10px] rounded-full w-5 h-5 bg-primary flex items-center justify-center ">{carts.length}</span>
+                                <span className="absolute -top-2 -right-2 text-[10px] rounded-full w-5 h-5 bg-primary flex items-center justify-center ">{carts.cart_items.length}</span>
                             </div>
 
                            <CartSidebar carts={carts} isOpen={isOpenCart} onClose={() => toggleOpenCart(false)}/>

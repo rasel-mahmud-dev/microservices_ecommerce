@@ -44,10 +44,8 @@ const HomePage = () => {
     });
 
     function getAttribute(attributeId?: string) {
-        console.log(attributeRes?.data)
         if (attributeRes && attributeRes?.data) {
             let a = attributeRes.data.find(attr => String(attr.attribute_id) === attributeId)
-            console.log(a)
             return a
         }
         return {}

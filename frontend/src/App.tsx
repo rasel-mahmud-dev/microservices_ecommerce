@@ -22,12 +22,14 @@ import HomeLayout   from "./pages/HomeLayout.tsx"
 import Dashboard   from "./pages/admin/Dashboard.tsx"
 import useSWR from "swr";
 import {Attribute} from "./interface";
+import useCartState from "./store/cartState.ts";
 
 
 function App() {
     const [count, setCount] = useState(0)
 
     const authState = useAuthState()
+    const {fetchCarts} = useCartState()
 
     useEffect(() => {
         apis.get("/users-service/api/users/validate").then(({data, status}) => {
@@ -37,11 +39,13 @@ function App() {
         })
     }, [])
 
-    const cartsRes = useSWR('/api/carts', () => {
-        return apis.get("/carts-service/api/carts").then(res => res?.data)
-    });
 
-    console.log(cartsRes?.data)
+    useEffect(() => {
+        apis.get("/carts-service/api/carts").then(({data})=>{
+            fetchCarts(data)
+        })
+    }, []);
+
 
 
     return (

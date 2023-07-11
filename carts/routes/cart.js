@@ -4,8 +4,6 @@ const router = require("express").Router()
 const grpc = require('@grpc/grpc-js');
 
 const protoLoader = require('@grpc/proto-loader');
-const {readFile} = require("fs");
-const {join} = require("path");
 
 const PROTO_FILE = 'protos/product.proto';
 
@@ -21,10 +19,6 @@ const packageDefinition = protoLoader.loadSync(PROTO_FILE, {
 const productProto = grpc.loadPackageDefinition(packageDefinition).product;
 
 
-// readFile("protos/product.proto", (err, data)=>{
-//     console.log("result", data.toString())
-// })
-
 // get all cart products
 router.get("/", async function (req, res, next) {
     try {
@@ -37,8 +31,9 @@ router.get("/", async function (req, res, next) {
                 json_agg(json_build_object(
                 'variant_id', ci.variant_id,
                 'sku', ci.sku,
+                'quantity', ci.quantity,
                 'product_id', ci.product_id
-              )) AS cartItems
+              )) AS cart_items
              
              FROM cart c 
                JOIN cart_item ci ON ci.cart_id = c.cart_id         
@@ -49,33 +44,44 @@ router.get("/", async function (req, res, next) {
             [userId]
         )
 
-        // Create the gRPC client
-        const gClient = new productProto.ProductService('172.20.0.5:50053', grpc.credentials.createInsecure());
+        if (result.rowCount === 0) return res.status(200).send([])
 
-        // Define the request message
-        const request = {
-            page_size: 10,
-            page_number: 1
-        };
+        const containerIP = "172.20.0.4"
+
+        // Create the gRPC client
+        const gClient = new productProto.ProductService(containerIP + ':50053', grpc.credentials.createInsecure());
+
+
+        let cart = result.rows[0]
+        let productIds = []
+        cart.cart_items.forEach(item => {
+            const id = item.product_id
+            if (!productIds.includes(id)) {
+                productIds.push(id)
+            }
+        })
 
 
         // Make the gRPC call to list the products
-        gClient.ListProducts(request, (error, response) => {
+        gClient.ListProducts({productIds}, (error, response) => {
             if (error) {
-                console.error('Error:', error.message);
+                next("Cart items fetch fail")
                 return;
             }
-
             const products = response.products;
-            console.log('List of Products: s', products);
+
+            cart.cart_items = cart.cart_items.map(item => {
+                let prod = products.find(p => p.product_id == item.product_id) || null
+                item.product = prod
+                return item
+            })
+
+            res.status(200).send( cart)
 
         });
 
-
-        res.send(result.rows)
-
     } catch (ex) {
-        next(ex)
+        next("Cart items fetch fail")
     }
 })
 

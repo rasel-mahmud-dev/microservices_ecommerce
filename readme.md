@@ -11,3 +11,11 @@ docker run --name mypostgress -p 5432:5432 -e POSTGRES_USER=rasel -e POSTGRES_PA
 
 
 [//]: # (docker run -d --name nginx-container --network my-network -p 80:80 my-nginx2)
+
+
+
+```shell
+# Get container ipv4 address
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' micro-services-products-1
+
+```

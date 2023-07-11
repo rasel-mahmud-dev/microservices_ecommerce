@@ -8,7 +8,7 @@ import {CgTrash} from "react-icons/cg";
 interface CartSidebarProps {
     onClose: () => void,
     isOpen: boolean,
-    carts: Cart[]
+    carts: Cart
 }
 
 const CartSidebar: FC<CartSidebarProps> = ({onClose, isOpen, carts}) => {
@@ -26,7 +26,7 @@ const CartSidebar: FC<CartSidebarProps> = ({onClose, isOpen, carts}) => {
 
 
                     <div className="py-4">
-                        {carts.map(cart=>(
+                        {carts.cart_items.map(cart=>(
                             <div className="border-b border-gray-100/20 pt-4 pb-5 last:border-0">
 
                                 <div className="flex items-start gap-x-2">

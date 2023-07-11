@@ -1,5 +1,4 @@
 import {create} from 'zustand'
-import apis from "../apis/axios.ts";
 
 
 export type CartProduct = {
@@ -9,29 +8,36 @@ export type CartProduct = {
 }
 
 
-export type Cart = {
+export type CartItem = {
     product: CartProduct,
     product_id: string,
     sku: string,
     variant_id: string
     quantity: number
 }
+export type Cart = {
+    cart_id?: string,
+    cart_items: CartItem[]
+}
 
 export interface CartState {
     isOpenCart: boolean,
-    carts: Cart[]
-    fetchCarts: (payload: Cart[]) => void
-    addToCart: (payload: Cart, isOpenCart: boolean) => void
+    carts: Cart
+    fetchCarts: (payload: Cart ) => void
+    addToCart: (payload: CartItem, isOpenCart: boolean) => void
     toggleOpenCart: (isOpenCart: boolean) => void
 }
 
 const useCartState = create<CartState>(set => ({
     isOpenCart: false,
-    carts: [],
+    carts: {
+        cart_id: undefined,
+        cart_items: []
+    },
     fetchCarts: (payload) => set({
         carts: payload
     }),
-    addToCart: (payload, isOpenCart = false) => set(function  (state) {
+    addToCart: (payload, isOpenCart = false) => set(function (state) {
 
         if (payload) {
             let updateIndex = state.carts.findIndex(c => {
