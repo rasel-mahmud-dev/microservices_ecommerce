@@ -5,7 +5,7 @@ const cors = require("cors")
 
 const router = require("./routes")
 
-const connectDatabase = require("@micro-service/utilities/lib/connectDatabase");
+const connectDatabase = require("@micro-service/utilities/connectDatabase");
 
 
 

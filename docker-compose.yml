@@ -4,6 +4,7 @@ services:
 
   api-gateway:
     build:
+      context: ./packages/api-gateway
       dockerfile: Dockerfile
     image: nginx
     container_name: api-gateway
@@ -12,64 +13,65 @@ services:
     networks:
       - my-network
     volumes:
-      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+      -  ./packages/api-gateway/nginx.conf:/etc/nginx/nginx.conf
 
-  users:
-    restart: always
-    build:
-      context: ./users
-      dockerfile: Dockerfile
-    ports:
-      - "1000:1000"
-    networks:
-      - my-network
-    volumes:
-      - ./users:/app
-      - ./protos:/app/protos
-      - ./.global_env:/app/.global_env
-
-  products:
-    restart: always
-    build:
-      context: ./products
-      dockerfile: Dockerfile
-    ports:
-      - "1003:1003"
-    networks:
-      - my-network
-    volumes:
-      - ./products:/app
-      - ./protos:/app/protos
-      - ./.global_env:/app/.global_env
-
-  carts:
-    restart: always
-    build:
-      context: ./carts
-      dockerfile: Dockerfile
-    ports:
-      - "1004:1004"
-    networks:
-      - my-network
-    volumes:
-      - ./carts:/app
-      - ./protos:/app/protos
-      - ./.global_env:/app/.global_env
-
-
-  orders:
-    restart: always
-    build:
-      context: ./orders
-      dockerfile: Dockerfile
-    ports:
-      - "1005:1005"
-    networks:
-      - my-network
-    volumes:
-      - ./orders:/app
-      - ./protos:/app/protos
-
+#  users:
+#    restart: always
+#    build:
+#      context: ./users
+#      dockerfile: Dockerfile
+#    ports:
+#      - "1000:1000"
+#    networks:
+#      - my-network
+#    volumes:
+#      - ./users:/app
+#      - ./protos:/app/protos
+#      - ./.global_env:/app/.global_env
+#
+#  products:
+#    restart: always
+#    build:
+#      context: ./products
+#      dockerfile: Dockerfile
+#    ports:
+#      - "1003:1003"
+#    networks:
+#      - my-network
+#    volumes:
+#      - ./products:/app
+#      - ./protos:/app/protos
+#      - ./.global_env:/app/.global_env
+#
+#  carts:
+#    restart: always
+#    build:
+#      context: ./carts
+#      dockerfile: Dockerfile
+#    ports:
+#      - "1004:1004"
+#    networks:
+#      - my-network
+#    volumes:
+#      - ./carts:/app
+#      - ./protos:/app/protos
+#      - ./.global_env:/app/.global_env
+#
+#
+#  orders:
+#    restart: always
+#    build:
+#      context: ./packages/orders
+#      dockerfile: Dockerfile
+#    ports:
+#      - "1005:1005"
+#    networks:
+#      - my-network
+#    volumes:
+#      - ./orders:/app // issue for detect file change
+#      - ./utilities:/app/utilities
+#      - ./packages/protos:/app/protos
+#
 
   mypostgress:
     image: postgres
@@ -80,7 +82,7 @@ services:
       - POSTGRES_USER=rasel
       - POSTGRES_PASSWORD=12345
     volumes:
-      - ./database:/var/lib/postgresql/data
+      - ./packages/database:/var/lib/postgresql/data
     networks:
       - my-network
 

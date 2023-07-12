@@ -1,4 +1,4 @@
-const connectDatabase = require("./database");
+const connectDatabase = require("@micro-service/utilities/connectDatabase");
 const auth = require("./middleware/auth");
 const router = require("express").Router()
 

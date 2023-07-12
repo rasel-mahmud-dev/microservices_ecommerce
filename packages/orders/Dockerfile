@@ -11,6 +11,8 @@ COPY package*.json ./
 # install npm dependency
 RUN npm install
 
+RUN npm install --save-dev nodemon
+
 ## Copy the enrire application code
 
 COPY . .
