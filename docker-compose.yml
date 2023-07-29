@@ -1,0 +1,104 @@
+version: '3'
+
+services:
+
+  api-gateway:
+    build:
+      dockerfile: Dockerfile
+    image: nginx
+    container_name: api-gateway
+    ports:
+      - 80:80
+    networks:
+      - my-network
+    volumes:
+      - ./api-gateway/nginx.conf:/etc/nginx/nginx.conf
+
+  users:
+    restart: always
+    build:
+      context: ./users
+      dockerfile: Dockerfile
+    ports:
+      - "1000:1000"
+    networks:
+      - my-network
+    volumes:
+      - ./users:/app
+      - ./protos:/app/protos
+      - ./.global_env:/app/.global_env
+
+  products:
+    restart: always
+    build:
+      context: ./products
+      dockerfile: Dockerfile
+    ports:
+      - "1003:1003"
+    networks:
+      - my-network
+    volumes:
+      - ./products:/app
+      - ./protos:/app/protos
+      - ./.global_env:/app/.global_env
+
+  carts:
+    restart: always
+    build:
+      context: ./carts
+      dockerfile: Dockerfile
+    ports:
+      - "1004:1004"
+    networks:
+      - my-network
+    volumes:
+      - ./carts:/app
+      - ./protos:/app/protos
+      - ./.global_env:/app/.global_env
+
+
+  orders:
+    restart: always
+    build:
+      context: ./orders
+      dockerfile: Dockerfile
+    ports:
+      - "1005:1005"
+    networks:
+      - my-network
+    volumes:
+      - ./orders:/app
+      - ./protos:/app/protos
+
+
+  payment:
+    restart: always
+    build:
+      context: ./payment
+      dockerfile: Dockerfile
+    ports:
+      - "1006:1006"
+    networks:
+      - my-network
+    volumes:
+      - ./payment:/app
+      - ./protos:/app/protos
+
+
+  mypostgress:
+    image: postgres
+    container_name: mypostgress
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=rasel
+      - POSTGRES_PASSWORD=12345
+    volumes:
+      - ./database:/var/lib/postgresql/data
+    networks:
+      - my-network
+
+
+networks:
+  my-network:
+
